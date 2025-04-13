@@ -1,0 +1,180 @@
+/* Προεπιλεγμένο reset για το html και το body */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Μεταβατική αλλαγή για πιο ομαλό animation */
+}
+
+/* Ορίζουμε το ύψος του root στοιχείου για να καλύπτει το 100% της οθόνης */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Το ύψος της σελίδας να καλύπτει το 100% της οθόνης */
+}
+
+/* Footer: θα τοποθετείται πάντα στο κάτω μέρος της οθόνης */
+footer {
+  margin-top: auto; /* Τοποθετεί το footer στο τέλος */
+}
+
+/* Προσαρμογές για το dark mode */
+body.dark {
+  background-color: #1a202c; /* Χρώμα φόντου για dark mode */
+  color: white; /* Χρώμα κειμένου για dark mode */
+}
+
+/* Χρωματισμοί και στυλ για το Theme Toggle */
+button {
+  background-color: #f0f0f0;
+  padding: 10px 15px;
+  border-radius: 50%;
+  border: 2px solid #cccccc;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #e0e0e0;
+}
+
+/* Στυλ για το light mode (default) */
+body {
+  background-color: white;
+  color: black;
+}
+
+body.dark button {
+  background-color: #444444;
+  border: 2px solid #666666;
+}
+
+body.dark button:hover {
+  background-color: #555555;
+}
+
+/* Στυλ για τον NavBar */
+.navbar {
+  background-color: #2b2b2b;
+  color: white;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem;
+}
+
+.navbar a:hover {
+  background-color: #444444;
+  border-radius: 5px;
+}
+
+/* Στυλ για το κεντρικό περιεχόμενο */
+main {
+  flex-grow: 1;
+  padding: 2rem;
+  text-align: center;
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+p {
+  font-size: 1.25rem;
+  color: #555;
+}
+
+.bg-white {
+  background-color: white;
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+
+.rounded-2xl {
+  border-radius: 1rem;
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+body.dark .shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+
+.text-center {
+  text-align: center;
+}
+
+/* Προσαρμογές για το Footer */
+footer {
+  background-color: #2b2b2b;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  position: relative;
+}
+
+footer p {
+  font-size: 1rem;
+  color: #888;
+
+}
+
+footer a {
+  color: #61dafb;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* Ειδικές ρυθμίσεις για το Footer όταν είναι dark mode */
+body.dark footer {
+  background-color: #333333;
+}
+body.dark nav {
+  background-color: #333333;
+}
+
+
+/* Προσαρμογές για το ThemeToggle (κουμπί) */
+button {
+  background-color: #f0f0f0;
+  padding: 0.75rem;
+  border-radius: 50%;
+  border: 2px solid #cccccc;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #e0e0e0;
+}
+
+button span {
+  font-size: 1.5rem;
+}
+
+/* Προσαρμογή για dark mode κουμπί */
+body.dark button {
+  background-color: #444444;
+  border: 2px solid #666666;
+}
+
+body.dark button:hover {
+  background-color: #555555;
+}
+
+input::placeholder {
+  text-align: center;
+}
