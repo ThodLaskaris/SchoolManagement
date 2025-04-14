@@ -7,16 +7,16 @@ import PieComponent from "./PieComponent";
 const AdminDashboard = () => {
   const [students, setStudents] = useState([]);
   const [teachers, setTeachers] = useState([]); // Θα προσθέσουμε το state για τους δασκάλους
-  const [newEnrollments, setNewEnrollments] = useState(0);
-  const [enrollmentStats, setEnrollmentStats] = useState([]);  
-  
+  const [teachersCount, setTeachersCount] = useState(0); // Διορθώθηκε το state για δασκάλους
+  const [enrollmentStats, setEnrollmentStats] = useState([]);
+
   useEffect(() => {
     // Ανάκτηση των μαθητών από το backend με Axios
     axios
       .get("http://localhost:3000/api/students")
       .then((response) => {
         setStudents(response.data);
-        setNewEnrollments(21); // Αντικατάστησε με την πραγματική τιμή των νέων εγγραφών
+        setNewEnrollments(response.data.filter(student => student.year === new Date().getFullYear()).length); // Υπολογισμός νέων εγγραφών
       })
       .catch((error) => {
         console.error("Error fetching students:", error);
@@ -27,6 +27,8 @@ const AdminDashboard = () => {
       .get("http://localhost:3000/api/teachers")
       .then((response) => {
         setTeachers(response.data);
+        setTeachersCount(response.data.length); // Αποθήκευση του αριθμού των δασκάλων
+        console.log("Teachers:", response.data);
       })
       .catch((error) => {
         console.error("Error fetching teachers:", error);
@@ -109,10 +111,10 @@ const AdminDashboard = () => {
           <p className="text-2xl">{totalStudents}</p>
         </div>
 
-        {/* New Enrollments */}
+        {/* Teachers Count */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-xl font-bold mb-2">New Enrollments for {currentYear}</h3>
-          <p className="text-2xl">{newEnrollments}</p>
+          <h3 className="text-xl font-bold mb-2">Teachers for {currentYear}</h3>
+          <p className="text-2xl">{teachersCount}</p>
         </div>
 
         {/* Mass Mail Students */}
@@ -129,7 +131,7 @@ const AdminDashboard = () => {
           onClick={handleSendMassEmailToTeachers}
           className="bg-white p-6 rounded-lg shadow-md cursor-pointer hover:bg-blue-500 hover:text-white"
         >
-          <h3 className="text-xl font-bold mb-2">Announce to  Teachers</h3>
+          <h3 className="text-xl font-bold mb-2">Announce to Teachers</h3>
           <p className="text-lg">Click here to send mass emails to teachers.</p>
         </div>
       </div>

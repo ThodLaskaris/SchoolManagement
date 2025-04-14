@@ -10,12 +10,12 @@ export default function Footer() {
       {/* Social Links */}
       <div className="space-x-4 flex items-center">
         {/* GitHub Icon */}
-        <a href="https://github.com/yourusername" className="text-blue-600 hover:text-blue-800 flex items-center">
+        <a href="https://github.com/thodLaskaris" target='blank' className="text-blue-600 hover:text-blue-800 flex items-center">
           <FaGithub className="mr-2" /> GitHub
         </a>
 
         {/* LinkedIn Icon */}
-        <a href="https://linkedin.com/in/yourusername" className="text-blue-600 hover:text-blue-800 flex items-center">
+        <a href="https://linkedin.com/in/thodLaskaris" target='_blank' className="text-blue-600 hover:text-blue-800 flex items-center">
           <FaLinkedin className="mr-2" /> LinkedIn
         </a>
       </div>

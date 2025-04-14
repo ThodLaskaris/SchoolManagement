@@ -1,49 +1,47 @@
-// // src/components/NavBar.jsx
-// import React from "react";
-// import ThemeToggle from './ThemeToggle'; // Εισαγωγή του ThemeToggle
-
-// export default function NavBar() {
-//   return (
-//     <nav className="bg-white shadow-md p-4 sticky top-0 z-50">
-//       <div className="container mx-auto flex justify-between items-center">
-//         <div className="text-xl font-bold text-blue-600">SUMS</div>
-//         <ul className="flex space-x-6 text-gray-700 font-medium">
-//           <li className="hover:text-blue-500 cursor-pointer">Home</li>
-//           <li className="hover:text-blue-500 cursor-pointer">LinkedIn</li>
-//           <li className="hover:text-blue-500 cursor-pointer">GitHub</li>
-//         </ul>
-
-//         {/* Προσθήκη του ThemeToggle στο Navbar */}
-//         <div className="ml-4">
-//           <ThemeToggle /> {/* Τοποθέτηση του κουμπιού ThemeToggle */}
-//         </div>
-//       </div>
-//     </nav>
-//   );
-// }
-import React, { useState } from "react";
-import ThemeToggle from './ThemeToggle'; // Εισαγωγή του ThemeToggle
-import { useNavigate } from "react-router-dom"; // Εισαγωγή του useNavigate για ανακατεύθυνση
+import React, { useState, useEffect, useRef } from "react";
+import ThemeToggle from './ThemeToggle';
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function NavBar({ isLoggedIn, handleLogout }) {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [showNavbar, setShowNavbar] = useState(true);
+  const lastScrollY = useRef(0);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
-  
-  // const handleLogout = () => {
-  //   // Λογική αποσύνδεσης (θα το διαχειριστείς αργότερα με τον backend)
-  //   // Μπορείς να προσθέσεις εδώ τον κώδικα για την αποσύνδεση
-  //   navigate("/");
-  // };
+  const handleNavigate = (path) => {
+    navigate(path);
+    setIsOpen(false);
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > lastScrollY.current && currentScrollY > 60) {
+        setShowNavbar(false);
+      } else {
+        setShowNavbar(true);
+      }
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <nav className="bg-white shadow-md p-4 sticky top-0 z-50">
+    <motion.nav
+      initial={{ y: 0 }}
+      animate={{ y: showNavbar ? 0 : -100 }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="bg-white shadow-md p-4 sticky top-0 z-50"
+    >
       <div className="container mx-auto flex justify-between items-center">
-        <div className="text-xl font-bold text-blue-600 cursor-pointer" onClick={() => navigate('/')}>
+        <div className="text-xl font-bold text-blue-600 cursor-pointer" onClick={() => handleNavigate('/')}>
           SUMS
         </div>
 
@@ -62,57 +60,59 @@ export default function NavBar({ isLoggedIn, handleLogout }) {
           </button>
         </div>
 
-        {/* Μενού Desktop */}
+        {/* Desktop Μενού */}
         <ul className={`hidden lg:flex space-x-6 text-gray-700 font-medium ${isLoggedIn ? 'ml-auto' : ''}`}>
           {isLoggedIn ? (
             <>
-              <li className="hover:text-blue-500 cursor-pointer" onClick={() => navigate("/dashboard")}>Dashboard</li>
-              <li className="hover:text-blue-500 cursor-pointer" onClick={() => navigate("/teachers")}>Teachers</li>
-              <li className="hover:text-blue-500 cursor-pointer" onClick={() => navigate("/classes")}>Classes</li>
-              <li className="hover:text-blue-500 cursor-pointer" onClick={() => navigate("/subjects")}>Courses</li>
-              <li className="hover:text-blue-500 cursor-pointer" onClick={() => navigate("/students")}>Students</li>
+              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/dashboard")}>Dashboard</li>
+              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/teachers")}>Teachers</li>
+              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/classes")}>Classes</li>
+              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/subjects")}>Courses</li>
+              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/students")}>Students</li>
               <li className="hover:text-blue-500 cursor-pointer" onClick={() => {
                 handleLogout();
-                navigate("/"); // Προαιρετικό redirect
+                handleNavigate("/");
               }}>
                 Logout
               </li>
             </>
           ) : (
             <>
-              <li className="hover:text-blue-500 cursor-pointer" onClick={() => navigate("/")}>Home</li>
-              <li className="hover:text-blue-500 cursor-pointer" onClick={() => navigate("/login")}>Login</li>
+              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/")}>Home</li>
+              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/login")}>Login</li>
             </>
           )}
         </ul>
 
-        {/* Theme Toggle Button */}
+        {/* Theme Toggle */}
         <div className="ml-4">
           <ThemeToggle />
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu χωρίς animation */}
       {isOpen && (
-        <div className="lg:hidden bg-white shadow-md p-4">
-          <ul className="space-y-4 text-gray-700 font-medium">
-            {isLoggedIn ? (
-              <>
-                <li className="hover:text-blue-500 cursor-pointer" onClick={() => navigate("/admin-dashboard")}>Dashboard</li>
-                <li className="hover:text-blue-500 cursor-pointer" onClick={() => navigate("/teachers")}>Teachers</li>
-                <li className="hover:text-blue-500 cursor-pointer" onClick={() => navigate("/classes")}>Classes</li>
-                <li className="hover:text-blue-500 cursor-pointer" onClick={() => navigate("/subjects")}>Subjects</li>
-                <li className="hover:text-blue-500 cursor-pointer" onClick={handleLogout}>Logout</li>
-              </>
-            ) : (
-              <>
-                <li className="hover:text-blue-500 cursor-pointer" onClick={() => navigate("/")}>Home</li>
-                <li className="hover:text-blue-500 cursor-pointer" onClick={() => navigate("/login")}>Login</li>
-              </>
-            )}
-          </ul>
-        </div>
+        <ul className="lg:hidden space-y-4 text-gray-700 font-medium shadow-lg bg-white p-4">
+          {isLoggedIn ? (
+            <>
+              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/admin-dashboard")}>Dashboard</li>
+              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/teachers")}>Teachers</li>
+              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/classes")}>Classes</li>
+              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/subjects")}>Courses</li>
+              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/students")}>Students</li>
+              <li className="hover:text-blue-500 cursor-pointer" onClick={() => {
+                handleLogout();
+                handleNavigate("/");
+              }}>Logout</li>
+            </>
+          ) : (
+            <>
+              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/")}>Home</li>
+              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/login")}>Login</li>
+            </>
+          )}
+        </ul>
       )}
-    </nav>
+    </motion.nav>
   );
 }
