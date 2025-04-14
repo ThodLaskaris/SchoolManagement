@@ -16,7 +16,6 @@ const AdminDashboard = () => {
       .get("http://localhost:3000/api/students")
       .then((response) => {
         setStudents(response.data);
-        setNewEnrollments(response.data.filter(student => student.year === new Date().getFullYear()).length); // Υπολογισμός νέων εγγραφών
       })
       .catch((error) => {
         console.error("Error fetching students:", error);
@@ -28,7 +27,7 @@ const AdminDashboard = () => {
       .then((response) => {
         setTeachers(response.data);
         setTeachersCount(response.data.length); // Αποθήκευση του αριθμού των δασκάλων
-        console.log("Teachers:", response.data);
+
       })
       .catch((error) => {
         console.error("Error fetching teachers:", error);

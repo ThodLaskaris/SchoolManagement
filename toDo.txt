@@ -1,17 +1,14 @@
 ------------Bugs-------------
 -Dark fonts colors
--Add Teacher ( Submit cancel )
 -
--Navbar responsive εξαφανιζεται το Students
 -
-
 ------------to do-------------
--link up github
 -validations++/auth/JWT
 -data exports
 -Login db
 -add role σε users(libr)?
--Courses table k course button 
+-Courses table  teacher details
+-Classes table class button
 -Date year add student αλλαγη 
 -Edit grade
 -Courses Teacher Details expanded
