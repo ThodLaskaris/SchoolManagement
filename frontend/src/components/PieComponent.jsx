@@ -1,62 +1,61 @@
-// // src/components/PieComponent.jsx
-// import React from "react";
-// import { Pie } from "react-chartjs-2";
-// import { Chart as ChartJs, ArcElement, Tooltip, Legend } from "chart.js";
-
-// // Εγκατάσταση των απαραίτητων modules του Chart.js
-// ChartJs.register(ArcElement, Tooltip, Legend);
-
-// const PieComponent = ({ data }) => {
-//   if (!data || data.length === 0) {
-//     return <p>Δεν υπάρχουν διαθέσιμα δεδομένα για το γράφημα.</p>;
-//   }
-
-//   const chartData = {
-//     labels: data.labels,
-//     datasets: [
-//       {
-//         label: "Enrollments Stats",
-//         data: data.values,
-//         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-//         hoverBackgroundColor: ['#FF4D75', '#4C8BF5', '#FFB94C'],
-//       },
-//     ],
-//   };
-
-//   return (
-//     <div>
-//       <h2>Enrollment Statistics</h2>
-//       <Pie data={chartData} />
-//     </div>
-//   );
-// };
-
-// export default PieComponent;  // Εξαγωγή του PieComponent
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJs, ArcElement, Tooltip, Legend } from "chart.js";
+import axios from "axios";
 
 ChartJs.register(ArcElement, Tooltip, Legend);
 
 const PieComponent = () => {
-    // Mock data για το γράφημα
-    const mockData = {
-        labels: ["Male Students", "Female Students", "Other"],
-        datasets: [
-            {
-                label: "Enrollment Stats",
-                data: [60, 30, 10],  // Χρήση mock δεδομένων για τα ποσοστά
-                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-                hoverBackgroundColor: ['#FF4D75', '#4C8BF5', '#FFB94C'],
-            },
-        ],
+    const [chartData, setChartData] = useState(null);
+
+    const fetchGenderStats = async () => {
+        const response = await axios.get("http://localhost:3000/api/students/gender-stats");
+        return response.data;
     };
+    useEffect(() => {
+        axios.get("http://localhost:3000/api/students/gender-stats")
+            .then(response => {
+                const data = response.data;
+
+                // Χωρίζουμε ανά gender
+                const genderMap = {
+                    Male: 0,
+                    Female: 0,
+                    Other: 0
+                };
+
+                data.forEach(entry => {
+                    const key = entry.gender || "Other";
+                    genderMap[key] = entry.count;
+                });
+
+                setChartData({
+                    labels: ["Male", "Female", "Other"],
+                    datasets: [
+                        {
+                            label: "Enrollment Stats",
+                            data: [
+                                genderMap.Male,
+                                genderMap.Female,
+                                genderMap.Other
+                            ],
+                            backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56'],
+                            hoverBackgroundColor: ['#4C8BF5', '#FF4D75', '#FFB94C'],
+                        },
+                    ],
+                });
+            })
+            .catch(err => console.error("Error loading gender stats:", err));
+    }, []);
 
     return (
-        <div className="flex  w-72 h-72">
-            <h2>Enrollment Stats</h2>
-            <Pie data={mockData} />
+        <div className="w-72 h-72 mx-auto">
+            <h2 className="text-xl font-semibold mb-4">Gender Stats</h2>
+            {chartData ? (
+                <Pie data={chartData} />
+            ) : (
+                <p>Loading...</p>
+            )}
         </div>
     );
 };

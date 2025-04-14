@@ -1,51 +1,98 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios"; // Εισαγωγή του axios
+import axios from "axios";
+import emailjs from "emailjs-com";  // Εισαγωγή της βιβλιοθήκης emailjs
 import ChartComponent from "./ChartComponent"; // Εισαγωγή του γραφήματος
 import PieComponent from "./PieComponent";
 
 const AdminDashboard = () => {
   const [students, setStudents] = useState([]);
+  const [teachers, setTeachers] = useState([]); // Θα προσθέσουμε το state για τους δασκάλους
   const [newEnrollments, setNewEnrollments] = useState(0);
-  const [maleStudents, setMaleStudents] = useState(0);
-  const [femaleStudents, setFemaleStudents] = useState(0);
-  const [enrollmentStats, setEnrollmentStats] = useState([]);  // Για τα δεδομένα του γράφημα
-
+  const [enrollmentStats, setEnrollmentStats] = useState([]);  
+  
   useEffect(() => {
     // Ανάκτηση των μαθητών από το backend με Axios
     axios
       .get("http://localhost:3000/api/students")
       .then((response) => {
-        console.log(response.data);  // Ελέγχουμε τα δεδομένα που επιστρέφονται
-        setStudents(response.data); // Ορίζουμε τα δεδομένα στον state
-
-        // Υπολογισμοί για τα cards
-        const totalStudents = response.data.length;
-        const males = response.data.filter(student => student.gender === "male").length;
-        const females = response.data.filter(student => student.gender === "female").length;
-
-        setMaleStudents(males);
-        setFemaleStudents(females);
+        setStudents(response.data);
         setNewEnrollments(21); // Αντικατάστησε με την πραγματική τιμή των νέων εγγραφών
       })
       .catch((error) => {
-        console.error("Error fetching students:", error); // Χειρισμός σφαλμάτων
+        console.error("Error fetching students:", error);
       });
 
-    // Ανάκτηση δεδομένων για το γράφημα από το backend
+    // Ανάκτηση των δασκάλων
     axios
-      .get("http://localhost:3000/api/enrollments-stats")  // API για το γράφημα
+      .get("http://localhost:3000/api/teachers")
       .then((response) => {
-        console.log("Enrollment Stats:", response.data);
-
-        setEnrollmentStats(response.data);  // Αποθήκευση των δεδομένων στο state
+        setTeachers(response.data);
       })
       .catch((error) => {
-        console.error("Error fetching enrollment stats:", error); // Χειρισμός σφαλμάτων
+        console.error("Error fetching teachers:", error);
       });
-  }, []);  // Ενεργοποιείται μόλις το component φορτωθεί
+
+    // Ανάκτηση δεδομένων για το γράφημα
+    axios
+      .get("http://localhost:3000/api/enrollments-stats")
+      .then((response) => {
+        setEnrollmentStats(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching enrollment stats:", error);
+      });
+  }, []);
 
   const totalStudents = students.length;
   const currentYear = new Date().getFullYear();
+
+  const handleSendMassEmailToStudents = () => {
+    students.forEach(student => {
+      const emailTemplateParams = {
+        to_email: student.email, // Υποθέτουμε ότι κάθε student έχει email
+        subject: "Important Update",
+        message: "This is a message for students regarding new updates."
+      };
+
+      emailjs
+        .send(
+          "service_kfxioh4", // Το service ID από το EmailJS
+          "template_lh03laj", // Το template ID από το EmailJS
+          emailTemplateParams,
+          "IyaEmFgUjm25uvEQl" // Το user ID από το EmailJS
+        )
+        .then((response) => {
+          console.log(`Email sent successfully to ${student.email}:`, response);
+        })
+        .catch((error) => {
+          console.error(`Error sending email to ${student.email}:`, error);
+        });
+    });
+  };
+
+  const handleSendMassEmailToTeachers = () => {
+    teachers.forEach(teacher => {
+      const emailTemplateParams = {
+        to_email: teacher.email, // Υποθέτουμε ότι κάθε teacher έχει email
+        subject: "Important Update",
+        message: "This is a message for teachers regarding new updates."
+      };
+
+      emailjs
+        .send(
+          "service_kfxioh4", // Το service ID από το EmailJS
+          "template_lh03laj", // Το template ID από το EmailJS
+          emailTemplateParams,
+          "IyaEmFgUjm25uvEQl" // Το user ID από το EmailJS
+        )
+        .then((response) => {
+          console.log(`Email sent successfully to ${teacher.email}:`, response);
+        })
+        .catch((error) => {
+          console.error(`Error sending email to ${teacher.email}:`, error);
+        });
+    });
+  };
 
   return (
     <div className="min-h-screen flex flex-col p-6 bg-gray-100 rounded-lg shadow-md">
@@ -68,36 +115,37 @@ const AdminDashboard = () => {
           <p className="text-2xl">{newEnrollments}</p>
         </div>
 
-        {/* Male Students */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-xl font-bold mb-2">Male Students</h3>
-          <p className="text-2xl">{maleStudents}</p>
+        {/* Mass Mail Students */}
+        <div
+          onClick={handleSendMassEmailToStudents}
+          className="bg-white p-6 rounded-lg shadow-md cursor-pointer hover:bg-blue-500 hover:text-white"
+        >
+          <h3 className="text-xl font-bold mb-2">Announce to Students</h3>
+          <p className="text-lg">Click here to send mass emails to students.</p>
         </div>
 
-        {/* Female Students */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-xl font-bold mb-2">Female Students</h3>
-          <p className="text-2xl">{femaleStudents}</p>
+        {/* Mass Mail Teachers */}
+        <div
+          onClick={handleSendMassEmailToTeachers}
+          className="bg-white p-6 rounded-lg shadow-md cursor-pointer hover:bg-blue-500 hover:text-white"
+        >
+          <h3 className="text-xl font-bold mb-2">Announce to  Teachers</h3>
+          <p className="text-lg">Click here to send mass emails to teachers.</p>
         </div>
       </div>
 
-      {/* Graphs */}
       {/* Graphs */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Το ChartComponent */}
         <div className="w-full h-72">
-          <ChartComponent data={enrollmentStats} /> {/* Εδώ το γράφημα με τα δεδομένα από τη βάση */}
+          <ChartComponent data={enrollmentStats} />
         </div>
 
         {/* Το PieComponent */}
         <div className="w-full h-72">
-          <PieComponent data={enrollmentStats} /> {/* Το PieComponent παίρνει τα δεδομένα από το state */}
+          <PieComponent data={enrollmentStats} />
         </div>
       </div>
-
-
-
-
     </div>
   );
 };

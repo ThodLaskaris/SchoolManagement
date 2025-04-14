@@ -1,6 +1,7 @@
 import express from "express";
 import Student from "../models/student.js";
 import { Op } from "sequelize";
+import { getGenderStats } from "../controllers/studentController.js";
 
 import {
     createStudent,
@@ -12,7 +13,10 @@ import {
 
 const router = express.Router();
 
-// Προσθήκη του νέου endpoint για τα στατιστικά των εγγραφών
+// Στατιστικά φύλου
+router.get("/students/gender-stats", getGenderStats);
+
+// Στατιστικά εγγραφών
 router.get("/enrollments-stats", async (req, res) => {
     try {
         console.log("Fetching enrollment stats...");
@@ -24,15 +28,13 @@ router.get("/enrollments-stats", async (req, res) => {
 
         for (let month = 1; month <= 12; month++) {
             try {
-                // Ελέγχουμε τα δεδομένα κάθε μήνα για τυχόν σφάλματα
                 console.log(`Fetching data for month: ${month}`);
 
-                // Χρήση του Op για να κάνεις queries με σύγκριση ημερομηνιών
                 const count = await Student.count({
                     where: {
                         created_at: {
-                            [Op.gte]: new Date(currentYear, month - 1, 1), // Έναρξη του μήνα
-                            [Op.lt]: new Date(currentYear, month, 1), // Τέλος του μήνα
+                            [Op.gte]: new Date(currentYear, month - 1, 1),
+                            [Op.lt]: new Date(currentYear, month, 1),
                         },
                     },
                 });
@@ -52,16 +54,11 @@ router.get("/enrollments-stats", async (req, res) => {
     }
 });
 
-
 // Προϋπάρχοντα routes για μαθητές
 router.post("/students", createStudent);
-
 router.get("/students", getAllStudents);
-
 router.get("/students/:id", getStudentById);
-
 router.put("/students/:id", updateStudent);
-
 router.delete("/students/:id", deleteStudent);
 
 export default router;

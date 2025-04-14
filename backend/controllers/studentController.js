@@ -46,6 +46,23 @@ export const createStudent = async (req, res) => {
   }
 };
 
+export const getGenderStats = async (req, res) => {
+  try {
+      // Εκτέλεση του raw SQL query
+      const genderStats = await Student.sequelize.query(
+          `SELECT gender, COUNT(gender) AS count
+          FROM students
+          GROUP BY gender;`, 
+          { type: Student.sequelize.QueryTypes.SELECT }
+      );
+
+      // Επιστροφή των δεδομένων στον client
+      res.json(genderStats);
+  } catch (error) {
+      console.error("Error fetching gender stats:", error);
+      res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 // Λήψη όλων των μαθητών
 export const getAllStudents = async (req, res) => {

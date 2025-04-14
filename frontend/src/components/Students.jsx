@@ -82,6 +82,7 @@ const StudentsTable = () => {
             grade: student.grade,
             date_of_birth: student.date_of_birth,
             phone: student.phone || "",
+           
         });
     };
 
@@ -114,7 +115,7 @@ const StudentsTable = () => {
     return (
         <div className="p-6 bg-gray-100 rounded-lg shadow-md min-h-screen">
             <ToastContainer position="top-right" autoClose={3000} />
-
+    
             <motion.h1
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -122,7 +123,7 @@ const StudentsTable = () => {
             >
                 Students
             </motion.h1>
-
+    
             <div className="mb-4 flex justify-between items-center">
                 <button
                     onClick={() => setShowAddStudentForm(true)}
@@ -130,7 +131,7 @@ const StudentsTable = () => {
                 >
                     + Add Student
                 </button>
-
+    
                 <input
                     type="text"
                     value={searchTerm}
@@ -139,7 +140,7 @@ const StudentsTable = () => {
                     className="p-2 border border-gray-300 rounded-lg w-64"
                 />
             </div>
-
+    
             <div className="bg-white p-4 rounded-2xl shadow-xl overflow-x-auto">
                 {loading ? (
                     <div className="flex justify-center items-center h-48">
@@ -166,7 +167,7 @@ const StudentsTable = () => {
                         <tbody>
                             {filteredStudents.map((student, index) => {
                                 const isOpen = expanded === student.student_id;
-
+    
                                 return (
                                     <React.Fragment key={student.student_id}>
                                         <motion.tr
@@ -232,7 +233,7 @@ const StudentsTable = () => {
                     </motion.table>
                 )}
             </div>
-
+    
             {/* Add Student Form */}
             {showAddStudentForm && (
                 <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
@@ -244,13 +245,20 @@ const StudentsTable = () => {
                     </div>
                 </div>
             )}
-
+    
             {/* Edit Form */}
             {editingStudent && (
-                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-                    <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+                <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+                    {/* Το animation αφορά μόνο τη φόρμα, όχι το background */}
+                    <motion.div
+                        className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full"
+                        initial={{ opacity: 0, scale: 0.7 }} // Αρχική κατάσταση (σβησμένο και μικρό)
+                        animate={{ opacity: 1, scale: 1 }}    // Τελική κατάσταση (οπτική εμφάνιση και πλήρες μέγεθος)
+                        exit={{ opacity: 0, scale: 0.7 }}     // Αποχώρηση (σβησμένο και μικρό)
+                        transition={{ duration: 0.3 }}         // Διάρκεια της animation
+                    >
                         <h2 className="text-2xl font-bold mb-4">Edit Student</h2>
-
+    
                         <div className="mb-1">
                             <input
                                 type="text"
@@ -261,7 +269,7 @@ const StudentsTable = () => {
                                 className="w-4/5 p-2 border border-gray-300 rounded-lg"
                             />
                         </div>
-
+    
                         <div className="mb-2">
                             <input
                                 type="text"
@@ -272,9 +280,8 @@ const StudentsTable = () => {
                                 className="w-4/5 p-2 border border-gray-300 rounded-lg"
                             />
                         </div>
-
+    
                         <div className="mb-2">
-
                             <input
                                 type="email"
                                 name="email"
@@ -283,9 +290,8 @@ const StudentsTable = () => {
                                 className="w-4/5 p-2 border border-gray-300 rounded-lg"
                             />
                         </div>
-
+    
                         <div className="mb-1">
-
                             <input
                                 type="tel"
                                 name="phone"
@@ -294,7 +300,7 @@ const StudentsTable = () => {
                                 className="w-4/5 p-2 border border-gray-300 rounded-lg"
                             />
                         </div>
-                 
+             
                         <div className="flex justify-center space-x-4 mt-6">
                             <button
                                 onClick={() => setEditingStudent(null)}
@@ -309,11 +315,10 @@ const StudentsTable = () => {
                                 Save
                             </button>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             )}
         </div>
     );
-};
-
-export default StudentsTable;
+}
+    export default StudentsTable;

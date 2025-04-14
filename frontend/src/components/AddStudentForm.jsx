@@ -125,7 +125,9 @@ const AddStudentForm = ({ setShowAddStudentForm, setStudents }) => {
                 value={formData.email}
                 className="p-2 border w-full rounded"
                 required
+                
               />
+              
             </div>
 
             <div className="mb-2">
