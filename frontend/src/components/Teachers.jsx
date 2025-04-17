@@ -64,8 +64,8 @@ const TeachersTable = () => {
   const handleSort = () => {
     const sortedTeachers = [...teachers];
     sortedTeachers.sort((a, b) => {
-      const nameA = `${a.first_name} ${a.last_name}`.toLowerCase();
-      const nameB = `${b.first_name} ${b.last_name}`.toLowerCase();
+      const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+      const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
       return sortOrder === "asc"
         ? nameA.localeCompare(nameB)
         : nameB.localeCompare(nameA);
@@ -75,7 +75,7 @@ const TeachersTable = () => {
   };
 
   const filteredTeachers = teachers.filter((teacher) =>
-    `${teacher.first_name} ${teacher.last_name}`
+    `${teacher.firstName} ${teacher.lastName}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
   );
@@ -97,7 +97,7 @@ const TeachersTable = () => {
       await axios.put(`http://localhost:3000/api/teachers/${editingTeacher.teacher_id}`, editedTeacherData);
       setTeachers((prevTeachers) =>
         prevTeachers.map((teacher) =>
-          teacher.teacher_id === editingTeacher.teacher_id
+          teacher.id === editingTeacherid
             ? { ...teacher, ...editedTeacherData }
             : teacher
         )
@@ -172,22 +172,22 @@ const TeachersTable = () => {
             </thead>
             <tbody>
               {filteredTeachers.map((teacher, index) => {
-                const isOpen = expanded === teacher.teacher_id;
+                const isOpen = expanded === teacher.id;
 
                 return (
-                  <React.Fragment key={teacher.teacher_id}>
+                  <React.Fragment key={teacher.id}>
                     <motion.tr
                       whileHover={{ scale: 1.01 }}
                       className="border-b hover:bg-gray-50 cursor-pointer"
-                      onClick={() => toggleExpand(teacher.teacher_id)}
+                      onClick={() => toggleExpand(teacher.id)}
                     >
                       <td className="px-4 py-3">{index + 1}</td>
                       <td className="px-4 py-3 font-medium">
-                        {teacher.first_name} {teacher.last_name}
+                        {teacher.firstName} {teacher.lastName}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500">{teacher.email || "-"}</td>
                       <td className="px-4 py-3 text-sm text-gray-500">{teacher.phone || "-"}</td>
-                      <td className="px-4 py-3 text-sm">{teacher.course_id || "-"}</td>
+                      <td className="px-4 py-3 text-sm">{teacher.courses.name || "-"}</td>
                       <td className="px-4 py-3">
                         <button
                           className="text-blue-500"

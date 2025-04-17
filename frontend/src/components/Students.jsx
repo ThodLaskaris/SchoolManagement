@@ -9,8 +9,9 @@ import AddStudentForm from "./AddStudentForm";
 const StudentsTable = () => {
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [expanded, setExpanded] = useState(null); // Ένα ID μπορεί να είναι ανοιχτό κάθε φορά
+    const [expanded, setExpanded] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const [placeholderText, setPlaceholderText] = useState("Search by name or ID");
     const [sortOrder, setSortOrder] = useState("asc");
     const [editingStudent, setEditingStudent] = useState(null);
     const [showAddStudentForm, setShowAddStudentForm] = useState(false);
@@ -37,7 +38,6 @@ const StudentsTable = () => {
                     })) || []
                 }));
 
-
                 setTimeout(() => {
                     setStudents(studentsWithCourses);
                     setLoading(false);
@@ -51,11 +51,19 @@ const StudentsTable = () => {
     }, []);
 
     const toggleExpand = (id) => {
-        setExpanded((prev) => (prev === id ? null : id)); // Εναλλάσσουμε το ID αν έχει ήδη ανοιχτεί ή κλείνουμε
+        setExpanded((prev) => (prev === id ? null : id));
     };
 
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
+    };
+
+    const handleMouseEnter = () => {
+        setPlaceholderText("Search...");
+    };
+
+    const handleMouseLeave = () => {
+        setPlaceholderText("Search by name or ID");
     };
 
     const handleSort = () => {
@@ -73,7 +81,7 @@ const StudentsTable = () => {
     };
 
     const filteredStudents = students.filter((student) =>
-        `${student.firstName} ${student.lastName}`
+        `${student.firstName} ${student.lastName} ${student.id} ${student.email}`
             .toLowerCase()
             .includes(searchTerm.toLowerCase())
     );
@@ -147,8 +155,10 @@ const StudentsTable = () => {
                     type="text"
                     value={searchTerm}
                     onChange={handleSearch}
-                    placeholder="Search by name..."
-                    className="p-2 border border-gray-300 rounded-lg w-64"
+                    placeholder={placeholderText}
+                    className="p-2 border border-gray-300 rounded-lg w-49"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
                 />
             </div>
 
@@ -184,20 +194,14 @@ const StudentsTable = () => {
                                         <motion.tr
                                             whileHover={{ scale: 1.01 }}
                                             className="border-b hover:bg-gray-50 cursor-pointer"
-                                            onClick={() => toggleExpand(student.id)} // Εδώ το toggle
+                                            onClick={() => toggleExpand(student.id)}
                                         >
                                             <td className="px-4 py-3">{index + 1}</td>
                                             <td className="px-4 py-3 font-medium">
                                                 {student.firstName} {student.lastName}
                                             </td>
                                             <td className="px-4 py-3 text-sm text-gray-500">{student.email || "-"}</td>
-                                            {/* <td className="px-4 py-3 text-sm text-gray-500">
-                                                {student.id ? student.id : "-"}
-                                            </td> */}
                                             <td className="px-4 py-3 text-sm text-gray-500">{calculateAverage(student.grades)}</td>
-                                            {/* <td className="px-4 py-3 text-sm">
-                                                {student.dateOfBirth?.slice(0, 10)}
-                                            </td> */}
                                             <td className="px-4 py-3 text-sm text-gray-500">{student.classId || "-"}</td>
                                             <td className="px-4 py-3">
                                                 <button
@@ -236,7 +240,6 @@ const StudentsTable = () => {
                                                                 </div>
                                                             ) : "-"}
                                                             </div>
-                                          
                                                         </div>
                                                     </td>
                                                 </motion.tr>
@@ -250,17 +253,15 @@ const StudentsTable = () => {
                 )}
             </div>
 
-            {/* Add Student Form */}
             {showAddStudentForm && (
                 <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
                     <AddStudentForm
                         setShowAddStudentForm={setShowAddStudentForm}
-                        setStudents={setStudents}  // Περάστε το setStudents εδώ
+                        setStudents={setStudents}
                     />
                 </div>
             )}
 
-            {/* Edit Form */}
             {editingStudent && (
                 <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
                     <motion.div
@@ -333,6 +334,6 @@ const StudentsTable = () => {
             )}
         </div>
     );
-}
+};
 
 export default StudentsTable;
