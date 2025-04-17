@@ -66,6 +66,7 @@ const AddStudentForm = ({ setShowAddStudentForm, setStudents }) => {
 
   return (
     <>
+      {/* Γκρι φόντο πίσω από τη φόρμα */}
       <motion.div
         className="fixed inset-0 bg-gray-500 bg-opacity-50"
         initial={{ opacity: 0 }}
@@ -73,6 +74,8 @@ const AddStudentForm = ({ setShowAddStudentForm, setStudents }) => {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
       />
+  
+      {/* Φόρμα χωρίς πλαίσιο */}
       <motion.div
         className="fixed inset-0 flex justify-center items-center"
         initial={{ opacity: 0, y: -50 }}
@@ -103,7 +106,7 @@ const AddStudentForm = ({ setShowAddStudentForm, setStudents }) => {
                 required
               />
             </div>
-
+  
             <div className="mb-2">
               <input
                 type="text"
@@ -115,7 +118,7 @@ const AddStudentForm = ({ setShowAddStudentForm, setStudents }) => {
                 required
               />
             </div>
-
+  
             <div className="mb-2">
               <input
                 type="email"
@@ -125,11 +128,9 @@ const AddStudentForm = ({ setShowAddStudentForm, setStudents }) => {
                 value={formData.email}
                 className="p-2 border w-full rounded"
                 required
-                
               />
-              
             </div>
-
+  
             <div className="mb-2">
               <input
                 type="text"
@@ -141,7 +142,7 @@ const AddStudentForm = ({ setShowAddStudentForm, setStudents }) => {
                 required
               />
             </div>
-
+  
             <div className="mb-2">
               <input
                 type="date"
@@ -152,7 +153,7 @@ const AddStudentForm = ({ setShowAddStudentForm, setStudents }) => {
                 className="p-2 border w-full rounded"
               />
             </div>
-
+  
             <div className="mb-4">
               <select
                 name="class_id"
@@ -173,7 +174,7 @@ const AddStudentForm = ({ setShowAddStudentForm, setStudents }) => {
                 )}
               </select>
             </div>
-
+  
             <div className="flex justify-end space-x-2">
               <button
                 type="button"
@@ -191,6 +192,5 @@ const AddStudentForm = ({ setShowAddStudentForm, setStudents }) => {
       </motion.div>
     </>
   );
-};
-
-export default AddStudentForm;
+}
+export default AddStudentForm;  

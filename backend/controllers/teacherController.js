@@ -1,9 +1,11 @@
 import Teacher from "../models/teacher.js";
+import { teacherDTO, teachersListDTO } from "../DTO/teachersDTO.js";
+import Course from "../models/course.js"; // Εισαγωγή του μοντέλου Course
 
-
+// Δημιουργία νέου δασκάλου
 export const createTecher = async (req, res) => {
     try {
-        const { first_name, last_name, email, phone, } = req.body;
+        const { first_name, last_name, email, phone } = req.body;
         const teacher = await Teacher.create({
             first_name,
             last_name,
@@ -15,40 +17,61 @@ export const createTecher = async (req, res) => {
         return res.status(500).json({
             message: error.message
         });
-    };
+    }
 };
 
+// Ανάκτηση όλων των δασκάλων
 export const getAllTeachers = async (req, res) => {
     try {
-        const teachers = await Teacher.findAll();
-        res.json(teachers);
-
+        const teachers = await Teacher.findAll({
+            include: [
+                {
+                    model: Course,   // Βεβαιώσου ότι το Course είναι εισαγμένο σωστά
+                    as: "courses",
+                    attributes: ["name"],
+                },
+            ],
+        });
+        const teacherData = teachersListDTO(teachers);
+        return res.status(200).json(teacherData);
     } catch (error) {
-        console.error("Error fetching teachers...", error);
-        res.status(500).json({
-            error: "Internal server error"
+        return res.status(500).json({
+            message: error.message
         });
     }
 };
-export const getTeacherById = async (req,res) => {
-    const {id} = req.params;
+
+// Ανάκτηση δασκάλου από το ID
+export const getTeacherById = async (req, res) => {
+    const { id } = req.params;
     try {
-        const teacher = await Teacher.findByPk(id);
+        const teacher = await Teacher.findByPk(id, {
+            include: [
+                {
+                    model: Course,   // Εδώ επίσης το μοντέλο Course πρέπει να είναι εισαγμένο
+                    as: "courses",
+                    attributes: ["name"],
+                },
+            ],
+        });
         if (!teacher) {
             return res.status(404).json({
                 message: "Teacher not found"
             });
         }
-        return res.status(200).json(teacher);
+        const teacherData = teacherDTO(teacher);
+        return res.status(200).json(teacherData);
     } catch (error) {
         return res.status(500).json({
             message: error.message
-        }); 
+        });
     }
 };
-export const updateTeacher = async (req,res) => {
-    const {id} = req.params;
-    const {first_name, last_name, email, phone, course_id} = req.body;
+
+// Ενημέρωση δασκάλου
+export const updateTeacher = async (req, res) => {
+    const { id } = req.params;
+    const { first_name, last_name, email, phone, course_id } = req.body;
     try {
         const teacher = await Teacher.findByPk(id);
         if (!teacher) {
@@ -62,16 +85,17 @@ export const updateTeacher = async (req,res) => {
         teacher.phone = phone || teacher.phone;
         teacher.course_id = course_id || teacher.course_id;
         await teacher.save();
-        return res.status(200).json(teacher);
-
-    }catch(error) {
+        return res.status(200).json(teacherDTO(teacher));
+    } catch (error) {
         return res.status(500).json({
             message: error.message
         });
     }
 };
-export const deleteTeacher = async (req,res) => {
-    const {id} = req.params;
+
+// Διαγραφή δασκάλου
+export const deleteTeacher = async (req, res) => {
+    const { id } = req.params;
     try {
         const teacher = await Teacher.findByPk(id);
         if (!teacher) {
@@ -83,7 +107,7 @@ export const deleteTeacher = async (req,res) => {
         return res.status(200).json({
             message: "Teacher has been deleted."
         });
-    }catch(error) {
+    } catch (error) {
         return res.status(500).json({
             message: error.message
         });

@@ -92,27 +92,34 @@ export default function NavBar({ isLoggedIn, handleLogout }) {
 
       {/* Mobile Menu χωρίς animation */}
       {isOpen && (
-        <ul className="lg:hidden space-y-4 text-gray-700 font-medium shadow-lg bg-white p-4">
-          {isLoggedIn ? (
-            <>
-              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/admin-dashboard")}>Dashboard</li>
-              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/teachers")}>Teachers</li>
-              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/classes")}>Classes</li>
-              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/subjects")}>Courses</li>
-              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/students")}>Students</li>
-              <li className="hover:text-blue-500 cursor-pointer" onClick={() => {
-                handleLogout();
-                handleNavigate("/");
-              }}>Logout</li>
-            </>
-          ) : (
-            <>
-              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/")}>Home</li>
-              <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/login")}>Login</li>
-            </>
-          )}
-        </ul>
-      )}
+  <motion.ul
+    initial={{ opacity: 0, y: -20 }}  // Ξεκινάει από αδιαφανές και πάνω
+    animate={{ opacity: 1, y: 0 }}    // Γίνεται πλήρως αδιαφανές και παίρνει την κανονική του θέση
+    exit={{ opacity: 0, y: 20 }}      // Όταν κλείνει, γίνεται αδιαφανές και μετακινείται προς τα κάτω
+    transition={{ duration: 0.3, ease: "easeInOut" }} // Ορίζουμε την διάρκεια και τον τύπο μετάβασης
+    className="lg:hidden space-y-4 text-gray-700 font-medium shadow-lg bg-white p-4"
+  >
+    {isLoggedIn ? (
+      <>
+        <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/dashboard")}>Dashboard</li>
+        <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/teachers")}>Teachers</li>
+        <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/classes")}>Classes</li>
+        <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/subjects")}>Courses</li>
+        <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/students")}>Students</li>
+        <li className="hover:text-blue-500 cursor-pointer" onClick={() => {
+          handleLogout();
+          handleNavigate("/");
+        }}>Logout</li>
+      </>
+    ) : (
+      <>
+        <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/")}>Home</li>
+        <li className="hover:text-blue-500 cursor-pointer" onClick={() => handleNavigate("/login")}>Login</li>
+      </>
+    )}
+  </motion.ul>
+)}
     </motion.nav>
   );
 }
+ 

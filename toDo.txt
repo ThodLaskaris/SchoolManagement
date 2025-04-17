@@ -1,6 +1,6 @@
 ------------Bugs-------------
 -Dark fonts colors
--
+-animate navbar mobile.
 -
 ------------to do-------------
 -validations++/auth/JWT

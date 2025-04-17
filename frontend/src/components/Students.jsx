@@ -9,7 +9,7 @@ import AddStudentForm from "./AddStudentForm";
 const StudentsTable = () => {
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [expanded, setExpanded] = useState(null);
+    const [expanded, setExpanded] = useState(null); // Ένα ID μπορεί να είναι ανοιχτό κάθε φορά
     const [searchTerm, setSearchTerm] = useState("");
     const [sortOrder, setSortOrder] = useState("asc");
     const [editingStudent, setEditingStudent] = useState(null);
@@ -27,8 +27,19 @@ const StudentsTable = () => {
         axios
             .get("http://localhost:3000/api/students")
             .then((res) => {
+                console.log("data received", res.data);
+                const studentsWithCourses = res.data.map(student => ({
+                    ...student,
+                    courses: student.courses?.map(c => ({
+                        id: c.course_id,
+                        name: c.name,
+                        description: c.description,
+                    })) || []
+                }));
+
+
                 setTimeout(() => {
-                    setStudents(res.data);
+                    setStudents(studentsWithCourses);
                     setLoading(false);
                 }, 1000);
             })
@@ -40,7 +51,7 @@ const StudentsTable = () => {
     }, []);
 
     const toggleExpand = (id) => {
-        setExpanded((prev) => (prev === id ? null : id));
+        setExpanded((prev) => (prev === id ? null : id)); // Εναλλάσσουμε το ID αν έχει ήδη ανοιχτεί ή κλείνουμε
     };
 
     const handleSearch = (e) => {
@@ -50,8 +61,8 @@ const StudentsTable = () => {
     const handleSort = () => {
         const sortedStudents = [...students];
         sortedStudents.sort((a, b) => {
-            const nameA = `${a.first_name} ${a.last_name}`.toLowerCase();
-            const nameB = `${b.first_name} ${b.last_name}`.toLowerCase();
+            const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+            const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
 
             return sortOrder === "asc"
                 ? nameA.localeCompare(nameB)
@@ -62,33 +73,33 @@ const StudentsTable = () => {
     };
 
     const filteredStudents = students.filter((student) =>
-        `${student.first_name} ${student.last_name}`
+        `${student.firstName} ${student.lastName}`
             .toLowerCase()
             .includes(searchTerm.toLowerCase())
     );
 
     const calculateAverage = (grades) => {
         if (!grades || grades.length === 0) return "-";
-        const sum = grades.reduce((total, grade) => total + parseFloat(grade.grade), 0);
+        const sum = grades.reduce((total, grade) => total + parseFloat(grade.value), 0);
         return (sum / grades.length).toFixed(2);
     };
 
     const handleEditClick = (student) => {
+        console.log("Student being edited: ", student);
         setEditingStudent(student);
         setEditedStudentData({
-            first_name: student.first_name,
-            last_name: student.last_name,
+            firstName: student.firstName,
+            lastName: student.lastName,
             email: student.email,
-            grade: student.grade,
+            grades: student.grades,
             date_of_birth: student.date_of_birth,
             phone: student.phone || "",
-           
         });
     };
 
     const handleSaveChanges = async () => {
         try {
-            await axios.put(`http://localhost:3000/api/students/${editingStudent.student_id}`, editedStudentData);
+            await axios.put(`http://localhost:3000/api/students/${editingStudent.id}`, editedStudentData);
             setStudents((prevStudents) =>
                 prevStudents.map((student) =>
                     student.student_id === editingStudent.student_id
@@ -115,7 +126,7 @@ const StudentsTable = () => {
     return (
         <div className="p-6 bg-gray-100 rounded-lg shadow-md min-h-screen">
             <ToastContainer position="top-right" autoClose={3000} />
-    
+
             <motion.h1
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -123,7 +134,7 @@ const StudentsTable = () => {
             >
                 Students
             </motion.h1>
-    
+
             <div className="mb-4 flex justify-between items-center">
                 <button
                     onClick={() => setShowAddStudentForm(true)}
@@ -131,7 +142,7 @@ const StudentsTable = () => {
                 >
                     + Add Student
                 </button>
-    
+
                 <input
                     type="text"
                     value={searchTerm}
@@ -140,7 +151,7 @@ const StudentsTable = () => {
                     className="p-2 border border-gray-300 rounded-lg w-64"
                 />
             </div>
-    
+
             <div className="bg-white p-4 rounded-2xl shadow-xl overflow-x-auto">
                 {loading ? (
                     <div className="flex justify-center items-center h-48">
@@ -156,36 +167,38 @@ const StudentsTable = () => {
                             <tr className="text-center border-b text-gray-600">
                                 <th className="px-4 py-3">#</th>
                                 <th className="px-4 py-3 cursor-pointer" onClick={handleSort}>
-                                    Name {sortOrder === "asc" ? "↑" : "↓"}
+                                    Full Name {sortOrder === "asc" ? "↑" : "↓"}
                                 </th>
                                 <th className="px-4 py-3">Email</th>
-                                <th className="px-4 py-3">Student ID</th>
-                                <th className="px-4 py-3">Birthdate</th>
+                                <th className="px-4 py-3">Average Grades</th>
+                                <th className="px-4 py-3">Class</th>
                                 <th className="px-4 py-3">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredStudents.map((student, index) => {
-                                const isOpen = expanded === student.student_id;
-    
+                                const isOpen = expanded === student.id;
+
                                 return (
-                                    <React.Fragment key={student.student_id}>
+                                    <React.Fragment key={student.id}>
                                         <motion.tr
                                             whileHover={{ scale: 1.01 }}
                                             className="border-b hover:bg-gray-50 cursor-pointer"
-                                            onClick={() => toggleExpand(student.student_id)}
+                                            onClick={() => toggleExpand(student.id)} // Εδώ το toggle
                                         >
                                             <td className="px-4 py-3">{index + 1}</td>
                                             <td className="px-4 py-3 font-medium">
-                                                {student.first_name} {student.last_name}
+                                                {student.firstName} {student.lastName}
                                             </td>
                                             <td className="px-4 py-3 text-sm text-gray-500">{student.email || "-"}</td>
-                                            <td className="px-4 py-3 text-sm text-gray-500">
-                                                {student.student_id ? student.student_id : "-"}
-                                            </td>
-                                            <td className="px-4 py-3 text-sm">
-                                                {student.date_of_birth?.slice(0, 10)}
-                                            </td>
+                                            {/* <td className="px-4 py-3 text-sm text-gray-500">
+                                                {student.id ? student.id : "-"}
+                                            </td> */}
+                                            <td className="px-4 py-3 text-sm text-gray-500">{calculateAverage(student.grades)}</td>
+                                            {/* <td className="px-4 py-3 text-sm">
+                                                {student.dateOfBirth?.slice(0, 10)}
+                                            </td> */}
+                                            <td className="px-4 py-3 text-sm text-gray-500">{student.classId || "-"}</td>
                                             <td className="px-4 py-3">
                                                 <button
                                                     className="text-blue-500"
@@ -209,11 +222,13 @@ const StudentsTable = () => {
                                                     <td colSpan="6" className="px-6 py-4 text-left text-gray-700">
                                                         <div className="space-y-1">
                                                             <div><strong>Phone:</strong> {student.phone || "—"}</div>
-                                                            <div><strong>Student ID:</strong> {student.student_id}</div>
+                                                            <div><strong>Date of Birth:</strong> {student.dateOfBirth?.slice(0, 10) || "—"}</div>
+                                                            <div><strong>Gender:</strong> {student.gender}</div>
+                                                            <div><strong>Student ID:</strong> {student.id}</div>
                                                             <div><strong>Grades:</strong> {student.grades && student.grades.length > 0 ? (
                                                                 <div className="space-y-1 text-left text-sm">
                                                                     {student.grades.map((grade, index) => (
-                                                                        <div key={index}>Grade {index + 1}: {grade.grade}</div>
+                                                                        <div key={index}>Grade {index + 1}: {grade.value}</div>
                                                                     ))}
                                                                     <div className="font-semibold text-blue-600">
                                                                         Avg: {calculateAverage(student.grades)}
@@ -221,6 +236,7 @@ const StudentsTable = () => {
                                                                 </div>
                                                             ) : "-"}
                                                             </div>
+                                          
                                                         </div>
                                                     </td>
                                                 </motion.tr>
@@ -233,54 +249,51 @@ const StudentsTable = () => {
                     </motion.table>
                 )}
             </div>
-    
+
             {/* Add Student Form */}
             {showAddStudentForm && (
-                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-                    <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
-                        <AddStudentForm
-                            setShowAddStudentForm={setShowAddStudentForm}
-                            setStudents={setStudents}  // Περάστε το setStudents εδώ
-                        />
-                    </div>
+                <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+                    <AddStudentForm
+                        setShowAddStudentForm={setShowAddStudentForm}
+                        setStudents={setStudents}  // Περάστε το setStudents εδώ
+                    />
                 </div>
             )}
-    
+
             {/* Edit Form */}
             {editingStudent && (
                 <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-                    {/* Το animation αφορά μόνο τη φόρμα, όχι το background */}
                     <motion.div
                         className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full"
-                        initial={{ opacity: 0, scale: 0.7 }} // Αρχική κατάσταση (σβησμένο και μικρό)
-                        animate={{ opacity: 1, scale: 1 }}    // Τελική κατάσταση (οπτική εμφάνιση και πλήρες μέγεθος)
-                        exit={{ opacity: 0, scale: 0.7 }}     // Αποχώρηση (σβησμένο και μικρό)
-                        transition={{ duration: 0.3 }}         // Διάρκεια της animation
+                        initial={{ opacity: 0, scale: 0.7 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.7 }}
+                        transition={{ duration: 0.3 }}
                     >
                         <h2 className="text-2xl font-bold mb-4">Edit Student</h2>
-    
+
                         <div className="mb-1">
                             <input
                                 type="text"
                                 name="first_name"
-                                value={editedStudentData.first_name}
+                                value={editedStudentData.firstName}
                                 readOnly
                                 onChange={handleChange}
                                 className="w-4/5 p-2 border border-gray-300 rounded-lg"
                             />
                         </div>
-    
+
                         <div className="mb-2">
                             <input
                                 type="text"
                                 name="last_name"
-                                value={editedStudentData.last_name}
+                                value={editedStudentData.lastName}
                                 readOnly
                                 onChange={handleChange}
                                 className="w-4/5 p-2 border border-gray-300 rounded-lg"
                             />
                         </div>
-    
+
                         <div className="mb-2">
                             <input
                                 type="email"
@@ -290,7 +303,7 @@ const StudentsTable = () => {
                                 className="w-4/5 p-2 border border-gray-300 rounded-lg"
                             />
                         </div>
-    
+
                         <div className="mb-1">
                             <input
                                 type="tel"
@@ -300,7 +313,7 @@ const StudentsTable = () => {
                                 className="w-4/5 p-2 border border-gray-300 rounded-lg"
                             />
                         </div>
-             
+
                         <div className="flex justify-center space-x-4 mt-6">
                             <button
                                 onClick={() => setEditingStudent(null)}
@@ -321,4 +334,5 @@ const StudentsTable = () => {
         </div>
     );
 }
-    export default StudentsTable;
+
+export default StudentsTable;
