@@ -116,14 +116,11 @@ const CoursesTable = () => {
     };
 
     const handleSaveNewCourse = async () => {
-        // Δημιουργία payload με τα σωστά ονόματα πεδίων
         const payload = {
-            course_name: newCourseData.name, // Αντί για "name", το backend περιμένει "course_name"
-            course_description: newCourseData.description, // Αντί για "description", το backend περιμένει "course_description"
+            course_name: newCourseData.name,
+            course_description: newCourseData.description,
             teacher_id: newCourseData.teacher_id,
         };
-
-        console.log("Payload Sent to Backend:", payload); // Δες τι δεδομένα στέλνονται
 
         if (!payload.course_name.trim()) {
             toast.error("Course Name is required!");
@@ -149,7 +146,7 @@ const CoursesTable = () => {
             <motion.h1
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-3xl  mb-6"
+                className="text-3xl mb-6"
             >
                 Courses
             </motion.h1>
@@ -280,12 +277,17 @@ const CoursesTable = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
                     >
                         <motion.div
                             className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full"
                             initial={{ scale: 0.8 }}
                             animate={{ scale: 1 }}
                             exit={{ scale: 0.8 }}
+                            transition={{
+                                scale: { type: "spring", stiffness: 500, damping: 60 },
+                                opacity: { duration: 0.3 },
+                            }}
                         >
                             <h2 className="text-2xl font-bold mb-4">Add Course</h2>
 
@@ -328,18 +330,22 @@ const CoursesTable = () => {
                             </div>
 
                             <div className="flex justify-center space-x-4 mt-6">
-                                <button
+                                <motion.button
                                     onClick={handleCloseAddCourse}
                                     className="px-4 py-1 bg-gray-300 rounded-lg"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
                                 >
                                     Cancel
-                                </button>
-                                <button
+                                </motion.button>
+                                <motion.button
                                     onClick={handleSaveNewCourse}
                                     className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
                                 >
                                     Save
-                                </button>
+                                </motion.button>
                             </div>
                         </motion.div>
                     </motion.div>
@@ -354,12 +360,17 @@ const CoursesTable = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
                     >
                         <motion.div
                             className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full"
                             initial={{ scale: 0.8 }}
                             animate={{ scale: 1 }}
                             exit={{ scale: 0.8 }}
+                            transition={{
+                                scale: { type: "spring", stiffness: 500, damping: 60 },
+                                opacity: { duration: 0.3 },
+                            }}
                         >
                             <h2 className="text-2xl font-bold mb-4">Edit Course</h2>
 
@@ -396,18 +407,22 @@ const CoursesTable = () => {
                             </div>
 
                             <div className="flex justify-center space-x-4 mt-6">
-                                <button
+                                <motion.button
                                     onClick={() => setEditingCourse(null)}
                                     className="px-4 py-1 bg-gray-300 rounded-lg"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
                                 >
                                     Cancel
-                                </button>
-                                <button
+                                </motion.button>
+                                <motion.button
                                     onClick={handleSaveChanges}
                                     className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
                                 >
                                     Save
-                                </button>
+                                </motion.button>
                             </div>
                         </motion.div>
                     </motion.div>

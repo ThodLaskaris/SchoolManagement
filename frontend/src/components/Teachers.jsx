@@ -64,8 +64,8 @@ const TeachersTable = () => {
   const handleSort = () => {
     const sortedTeachers = [...teachers];
     sortedTeachers.sort((a, b) => {
-      const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
-      const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+      const nameA = `${a.first_name} ${a.last_name}`.toLowerCase();
+      const nameB = `${b.first_name} ${b.last_name}`.toLowerCase();
       return sortOrder === "asc"
         ? nameA.localeCompare(nameB)
         : nameB.localeCompare(nameA);
@@ -75,7 +75,7 @@ const TeachersTable = () => {
   };
 
   const filteredTeachers = teachers.filter((teacher) =>
-    `${teacher.firstName} ${teacher.lastName}`
+    `${teacher.first_name} ${teacher.last_name}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
   );
@@ -183,10 +183,10 @@ const TeachersTable = () => {
                     >
                       <td className="px-4 py-3">{index + 1}</td>
                       <td className="px-4 py-3 font-medium">
-                        {teacher.firstName} {teacher.lastName}
+                        {teacher.first_name} {teacher.last_name}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500">{teacher.email || "-"}</td>
-                      <td className="px-4 py-3 text-sm text-gray-500">{teacher.id || "-"}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500">{teacher.phone || "-"}</td>
                       <td className="px-4 py-3 text-sm">{teacher.courses || "-"}</td>
                       <td className="px-4 py-3">
                         <button
@@ -232,89 +232,101 @@ const TeachersTable = () => {
       </div>
 
       {/* Add Teacher Form */}
-      {showAddTeacherForm && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-
-          <AddTeacherForm
-            setShowAddTeacherForm={setShowAddTeacherForm}
-            setTeachers={setTeachers}  // Pass the setTeachers here
-            courses={courses}
-          />
-
-        </div>
-      )}
-
-      {/* Edit Teacher Form */}
-      {editingTeacher && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+      <AnimatePresence>
+        {showAddTeacherForm && (
           <motion.div
-            className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full"
-            initial={{ opacity: 0, scale: 0.7 }}
+            key="add-teacher-modal"
+            className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center"
+            initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.7 }}
-            transition={{ duration: 0.3 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{
+              scale: { type: "spring", stiffness: 500, damping: 60 },
+              opacity: { duration: 0.3 },
+            }}
           >
-            <h2 className="text-2xl font-bold mb-4">Edit Teacher</h2>
-
-            <div className="mb-1">
-              <input
-                type="text"
-                name="first_name"
-                value={editedTeacherData.first_name}
-                readOnly
-                onChange={handleChange}
-                className="w-4/5 p-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-
-            <div className="mb-2">
-              <input
-                type="text"
-                name="last_name"
-                value={editedTeacherData.last_name}
-                readOnly
-                onChange={handleChange}
-                className="w-4/5 p-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-
-            <div className="mb-2">
-              <input
-                type="email"
-                name="email"
-                value={editedTeacherData.email}
-                onChange={handleChange}
-                className="w-4/5 p-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-
-            <div className="mb-1">
-              <input
-                type="tel"
-                name="phone"
-                value={editedTeacherData.phone}
-                onChange={handleChange}
-                className="w-4/5 p-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-
-            <div className="flex justify-center space-x-4 mt-6">
-              <button
-                onClick={() => setEditingTeacher(null)}
-                className="px-4 py-1 bg-gray-300 rounded-lg"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveChanges}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-              >
-                Save
-              </button>
-            </div>
+            <AddTeacherForm
+              setShowAddTeacherForm={setShowAddTeacherForm}
+              setTeachers={setTeachers}
+              courses={courses}
+            />
           </motion.div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {/* Edit Teacher Form */}
+        {editingTeacher && (
+          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+            <motion.div
+              className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full"
+              initial={{ opacity: 0, scale: 0.7 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.7 }}
+              transition={{ duration: 0.3 }}
+            >
+              <h2 className="text-2xl font-bold mb-4">Edit Teacher</h2>
+
+              <div className="mb-1">
+                <input
+                  type="text"
+                  name="first_name"
+                  value={editedTeacherData.first_name}
+                  readOnly
+                  onChange={handleChange}
+                  className="w-4/5 p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+
+              <div className="mb-2">
+                <input
+                  type="text"
+                  name="last_name"
+                  value={editedTeacherData.last_name}
+                  readOnly
+                  onChange={handleChange}
+                  className="w-4/5 p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+
+              <div className="mb-2">
+                <input
+                  type="email"
+                  name="email"
+                  value={editedTeacherData.email}
+                  onChange={handleChange}
+                  className="w-4/5 p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+
+              <div className="mb-1">
+                <input
+                  type="tel"
+                  name="phone"
+                  value={editedTeacherData.phone}
+                  onChange={handleChange}
+                  className="w-4/5 p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+
+              <div className="flex justify-center space-x-4 mt-6">
+                <button
+                  onClick={() => setEditingTeacher(null)}
+                  className="px-4 py-1 bg-gray-300 rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveChanges}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+                >
+                  Save
+                </button>
+              </div>
+            </motion.div>
+          </div>
+          
+        )}
+          </AnimatePresence>
     </div>
   );
 };

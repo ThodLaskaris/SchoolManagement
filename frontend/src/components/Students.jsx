@@ -28,7 +28,6 @@ const StudentsTable = () => {
         axios
             .get("http://localhost:3000/api/students")
             .then((res) => {
-                console.log("data received", res.data);
                 const studentsWithCourses = res.data.map(student => ({
                     ...student,
                     courses: student.courses?.map(c => ({
@@ -93,7 +92,6 @@ const StudentsTable = () => {
     };
 
     const handleEditClick = (student) => {
-        console.log("Student being edited: ", student);
         setEditingStudent(student);
         setEditedStudentData({
             firstName: student.firstName,
@@ -257,85 +255,105 @@ const StudentsTable = () => {
                 )}
             </div>
 
-            {showAddStudentForm && (
-                <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
-                    <AddStudentForm
-                        setShowAddStudentForm={setShowAddStudentForm}
-                        setStudents={setStudents}
-                    />
-                </div>
-            )}
-
-            {editingStudent && (
-                <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+            <AnimatePresence>
+                {showAddStudentForm && (
                     <motion.div
-                        className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full"
-                        initial={{ opacity: 0, scale: 0.7 }}
+                        key="add-student-modal"
+                        className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center"
+                        initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.7 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{
+                            scale: { type: "spring", stiffness: 500, damping: 60 },
+                            opacity: { duration: 0.3 },
+                        }}
+                    >
+                        <AddStudentForm
+                            setShowAddStudentForm={setShowAddStudentForm}
+                            setStudents={setStudents}
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {editingStudent && (
+                    <motion.div
+                        className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 , scale: 0.8 }}
                         transition={{ duration: 0.3 }}
                     >
-                        <h2 className="text-2xl font-bold mb-4">Edit Student</h2>
+                        <motion.div
+                            className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full"
+                            initial={{ scale: 0.7 }}
+                            animate={{ scale: 1 }}
+                            exit={{ scale: 0.7 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <h2 className="text-2xl font-bold mb-4">Edit Student</h2>
 
-                        <div className="mb-1">
-                            <input
-                                type="text"
-                                name="first_name"
-                                value={editedStudentData.first_name}
-                                readOnly
-                                onChange={handleChange}
-                                className="w-4/5 p-2 border border-gray-300 rounded-lg"
-                            />
-                        </div>
+                            <div className="mb-1">
+                                <input
+                                    type="text"
+                                    name="first_name"
+                                    value={editedStudentData.first_name}
+                                    readOnly
+                                    onChange={handleChange}
+                                    className="w-4/5 p-2 border border-gray-300 rounded-lg"
+                                />
+                            </div>
 
-                        <div className="mb-2">
-                            <input
-                                type="text"
-                                name="last_name"
-                                value={editedStudentData.last_name}
-                                readOnly
-                                onChange={handleChange}
-                                className="w-4/5 p-2 border border-gray-300 rounded-lg"
-                            />
-                        </div>
+                            <div className="mb-2">
+                                <input
+                                    type="text"
+                                    name="last_name"
+                                    value={editedStudentData.last_name}
+                                    readOnly
+                                    onChange={handleChange}
+                                    className="w-4/5 p-2 border border-gray-300 rounded-lg"
+                                />
+                            </div>
 
-                        <div className="mb-2">
-                            <input
-                                type="email"
-                                name="email"
-                                value={editedStudentData.email}
-                                onChange={handleChange}
-                                className="w-4/5 p-2 border border-gray-300 rounded-lg"
-                            />
-                        </div>
+                            <div className="mb-2">
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={editedStudentData.email}
+                                    onChange={handleChange}
+                                    className="w-4/5 p-2 border border-gray-300 rounded-lg"
+                                />
+                            </div>
 
-                        <div className="mb-1">
-                            <input
-                                type="tel"
-                                name="phone"
-                                value={editedStudentData.phone}
-                                onChange={handleChange}
-                                className="w-4/5 p-2 border border-gray-300 rounded-lg"
-                            />
-                        </div>
+                            <div className="mb-1">
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    value={editedStudentData.phone}
+                                    onChange={handleChange}
+                                    className="w-4/5 p-2 border border-gray-300 rounded-lg"
+                                />
+                            </div>
 
-                        <div className="flex justify-center space-x-4 mt-6">
-                            <button
-                                onClick={() => setEditingStudent(null)}
-                                className="px-4 py-1 bg-gray-300 rounded-lg"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleSaveChanges}
-                                className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-                            >
-                                Save
-                            </button>
-                        </div>
+                            <div className="flex justify-center space-x-4 mt-6">
+                                <button
+                                    onClick={() => setEditingStudent(null)}
+                                    className="px-4 py-1 bg-gray-300 rounded-lg"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleSaveChanges}
+                                    className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+                                >
+                                    Save
+                                </button>
+                            </div>
+                        </motion.div>
                     </motion.div>
-                </div>
-            )}
+                )}
+            </AnimatePresence>
         </div>
     );
 };
