@@ -5,12 +5,26 @@ import Teacher from "../models/teacher.js"; // Εισαγωγή του Teacher �
 export const createCourse = async (req, res) => {
     try {
         const { course_name, course_description, teacher_id } = req.body;
+
+        // Δημιουργία του μαθήματος
         const course = await Course.create({
             course_name,
             course_description,
             teacher_id,
         });
-        return res.status(201).json(course);
+
+        // Εύρεση του μαθήματος μαζί με τον δάσκαλο
+        const courseWithTeacher = await Course.findByPk(course.course_id, {
+            include: [
+                {
+                    model: Teacher,
+                    attributes: ["first_name", "last_name"],
+                    as: "teacher",
+                },
+            ],
+        });
+
+        return res.status(201).json(courseWithTeacher);
     } catch (error) {
         console.error("Error creating course:", error);
         return res.status(500).json({
@@ -79,12 +93,26 @@ export const updateCourse = async (req, res) => {
                 message: "Course not found",
             });
         }
+
+        // Ενημέρωσε τα πεδία του μαθήματος
         course.course_name = course_name || course.course_name;
         course.course_description = course_description || course.course_description;
         course.teacher_id = teacher_id || course.teacher_id;
 
         await course.save();
-        return res.status(200).json(course);
+
+        // Βρες το ενημερωμένο μάθημα μαζί με τον καθηγητή
+        const updatedCourse = await Course.findByPk(id, {
+            include: [
+                {
+                    model: Teacher,
+                    attributes: ["first_name", "last_name"],
+                    as: "teacher",
+                },
+            ],
+        });
+
+        return res.status(200).json(updatedCourse);
     } catch (error) {
         console.error("Error updating course:", error);
         return res.status(500).json({

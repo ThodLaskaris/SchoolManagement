@@ -281,7 +281,7 @@ const StudentsTable = () => {
                             <input
                                 type="text"
                                 name="first_name"
-                                value={editedStudentData.firstName}
+                                value={editedStudentData.first_name}
                                 readOnly
                                 onChange={handleChange}
                                 className="w-4/5 p-2 border border-gray-300 rounded-lg"
@@ -292,7 +292,7 @@ const StudentsTable = () => {
                             <input
                                 type="text"
                                 name="last_name"
-                                value={editedStudentData.lastName}
+                                value={editedStudentData.last_name}
                                 readOnly
                                 onChange={handleChange}
                                 className="w-4/5 p-2 border border-gray-300 rounded-lg"
