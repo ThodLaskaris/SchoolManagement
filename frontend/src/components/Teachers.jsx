@@ -186,8 +186,8 @@ const TeachersTable = () => {
                         {teacher.firstName} {teacher.lastName}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500">{teacher.email || "-"}</td>
-                      <td className="px-4 py-3 text-sm text-gray-500">{teacher.phone || "-"}</td>
-                      <td className="px-4 py-3 text-sm">{teacher.courses.name || "-"}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500">{teacher.id || "-"}</td>
+                      <td className="px-4 py-3 text-sm">{teacher.courses || "-"}</td>
                       <td className="px-4 py-3">
                         <button
                           className="text-blue-500"

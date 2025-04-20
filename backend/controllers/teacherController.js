@@ -1,6 +1,7 @@
 import Teacher from "../models/teacher.js";
 import { teacherDTO, teachersListDTO } from "../DTO/teachersDTO.js";
 import Course from "../models/course.js"; // Εισαγωγή του μοντέλου Course
+import Class from "../models/class.js";
 
 // Δημιουργία νέου δασκάλου
 export const createTecher = async (req, res) => {
@@ -26,9 +27,9 @@ export const getAllTeachers = async (req, res) => {
         const teachers = await Teacher.findAll({
             include: [
                 {
-                    model: Course,   // Βεβαιώσου ότι το Course είναι εισαγμένο σωστά
-                    as: "courses",
-                    attributes: ["name"],
+                    model: Class,   // Βεβαιώσου ότι το Course είναι εισαγμένο σωστά
+                    as: "teacherClasses",
+                    attributes: ["class_name", "schedule"],
                 },
             ],
         });

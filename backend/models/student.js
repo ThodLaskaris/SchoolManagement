@@ -1,10 +1,6 @@
-// models/student.js
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
-import Grade from './grades.js';
-import Course from './course.js';
 
-// Ορισμός του μοντέλου Student
 const Student = sequelize.define('Student', {
   student_id: {
     type: DataTypes.INTEGER,
@@ -32,8 +28,9 @@ const Student = sequelize.define('Student', {
     type: DataTypes.TEXT,
     allowNull: false,
   },
-  class: {
-    type: DataTypes.TEXT,
+  class_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
   },
   gender: {
     type: DataTypes.STRING,
@@ -44,20 +41,6 @@ const Student = sequelize.define('Student', {
   timestamps: true,
   createdAt: 'created_at',
   updatedAt: false,
-});
-
-// Συσχέτιση με Grade (one-to-many)
-Student.hasMany(Grade, {
-  foreignKey: "student_id",
-  as: "grades",
-});
-
-// Συσχέτιση με Course (many-to-many)
-Student.belongsToMany(Course, {
-  through: 'StudentCourses', // Όνομα του πίνακα συσχέτισης
-  foreignKey: 'student_id',
-  otherKey: 'course_id',
-  as: 'courses',
 });
 
 export default Student;

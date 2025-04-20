@@ -1,50 +1,46 @@
 import express from "express";
-import cors from "cors"; // Εισαγωγή του cors
+import cors from "cors";
+import dotenv from "dotenv";
+import sequelize from "./config/database.js";
 import studentRoutes from "./routes/studentRoutes.js";
 import classRoutes from "./routes/classRoutes.js";
-import sequelize from "./config/database.js";
-import courseRoutes from "./routes/courseRoutes.js"
+import courseRoutes from "./routes/courseRoutes.js";
 import teacherRoutes from "./routes/teacherRoutes.js";
-import gradeRoutes from "./routes/gradeRoutes.js"
-import Student from "./models/student.js";
-import Grade from "./models/grades.js";
-
-const PORT = 3000;
-Student.hasMany(Grade, {
-  foreignKey: "student_id",
-  as: "studentGrades",
-});
-
-Grade.belongsTo(Student, {
-  foreignKey: "student_id",
-  as: "student",
-});
-
+import gradeRoutes from "./routes/gradeRoutes.js";
+import defineRelationships from "./models/relationships.js";
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Χρήση του CORS middleware
-app.use(cors({
-  origin: "http://localhost:5173"  // Επιτρέπει το frontend από localhost:5173
-}));
+// Κλήση της συνάρτησης για τον ορισμό των συσχετίσεων
+defineRelationships();
 
+// Middleware για JSON
 app.use(express.json());
-app.use("/api", studentRoutes);
-app.use("/api", classRoutes);
-app.use("/api", courseRoutes);
+app.use(cors())
+
+// Συγχρονισμός της βάσης δεδομένων
+
+
+// Routes
+app.use("/api/students", studentRoutes);
+app.use("/api/classes", classRoutes);
+app.use("/api/courses", courseRoutes);
 app.use("/api/teachers", teacherRoutes);
 app.use("/api/grades", gradeRoutes);
 
-sequelize.authenticate()
-  .then(() => {
-    console.log("Connection has been established.");
-  })
-  .catch((error) => {
-    console.log("Unable for connection", error);
-  });
+// Σύνδεση με τη βάση δεδομένων και εκκίνηση του server
+(async () => {
+  try {
+    // Έλεγχος σύνδεσης με τη βάση δεδομένων
+    await sequelize.authenticate();
+    console.log("Database connection has been established successfully.");
 
-sequelize.sync().then(() => {
-  app.listen(PORT, () => {
-    console.log(`server is running on port ${PORT}`);
-  });
-});
+    // Εκκίνηση του server
+    app.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+})();

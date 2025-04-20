@@ -10,7 +10,8 @@ const AddStudentForm = ({ setShowAddStudentForm, setStudents }) => {
     email: '',
     phone: '',
     class_id: '',
-    date_of_birth: ''
+    date_of_birth: '',
+    gender: "",
   });
 
   const [classes, setClasses] = useState([]);
@@ -37,7 +38,7 @@ const AddStudentForm = ({ setShowAddStudentForm, setStudents }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { first_name, last_name, email, phone, class_id, date_of_birth } = formData;
+    const { first_name, last_name, email, phone, class_id, date_of_birth, gender } = formData;
 
     try {
       const res = await axios.post('http://localhost:3000/api/students', {
@@ -46,7 +47,8 @@ const AddStudentForm = ({ setShowAddStudentForm, setStudents }) => {
         email,
         phone,
         class_id,
-        date_of_birth
+        date_of_birth,
+        gender
       });
 
       if (res.status === 201 || res.status === 200) {
@@ -153,6 +155,22 @@ const AddStudentForm = ({ setShowAddStudentForm, setStudents }) => {
                 className="p-2 border w-full rounded"
               />
             </div>
+
+            <div className="mb-2">
+  <select
+    name="gender"
+    value={formData.gender}
+    onChange={handleChange}
+    className="p-2 border w-full rounded"
+    required
+  >
+    <option value="">Select Gender</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+    <option value="Other">Other</option>
+  </select>
+</div>
+
   
             <div className="mb-4">
               <select

@@ -12,6 +12,8 @@
 -Date year add student αλλαγη 
 -Edit grade
 -Courses Teacher Details expanded
+-Courses Assigned Teacher/Students
+να γινεται εισαγωγη not null απο το σαιτ κ οχι χειροκινηατ
 
 
 
@@ -19,9 +21,8 @@
 
 
 
-
-
-
+Φτιαξε το models/backend για Gender,Class
+το ιδιο για St
 
 
 

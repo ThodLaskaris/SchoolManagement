@@ -88,7 +88,7 @@ const StudentsTable = () => {
 
     const calculateAverage = (grades) => {
         if (!grades || grades.length === 0) return "-";
-        const sum = grades.reduce((total, grade) => total + parseFloat(grade.value), 0);
+        const sum = grades.reduce((total, grade) => total + parseFloat(grade.grade_value), 0);
         return (sum / grades.length).toFixed(2);
     };
 
@@ -187,22 +187,22 @@ const StudentsTable = () => {
                         </thead>
                         <tbody>
                             {filteredStudents.map((student, index) => {
-                                const isOpen = expanded === student.id;
+                                const isOpen = expanded === student.student_id;
 
                                 return (
-                                    <React.Fragment key={student.id}>
+                                    <React.Fragment key={student.student_id}>
                                         <motion.tr
                                             whileHover={{ scale: 1.01 }}
                                             className="border-b hover:bg-gray-50 cursor-pointer"
-                                            onClick={() => toggleExpand(student.id)}
+                                            onClick={() => toggleExpand(student.student_id)}
                                         >
                                             <td className="px-4 py-3">{index + 1}</td>
                                             <td className="px-4 py-3 font-medium">
-                                                {student.firstName} {student.lastName}
+                                                {student.first_name} {student.last_name}
                                             </td>
                                             <td className="px-4 py-3 text-sm text-gray-500">{student.email || "-"}</td>
-                                            <td className="px-4 py-3 text-sm text-gray-500">{calculateAverage(student.grades)}</td>
-                                            <td className="px-4 py-3 text-sm text-gray-500">{student.classId || "-"}</td>
+                                            <td className="px-4 py-3 text-sm text-gray-500">{calculateAverage(student.studentGrades)}</td>
+                                            <td className="px-4 py-3 text-sm text-gray-500">{student.class?.class_name || "-"}</td>
                                             <td className="px-4 py-3">
                                                 <button
                                                     className="text-blue-500"
@@ -218,29 +218,33 @@ const StudentsTable = () => {
                                         <AnimatePresence>
                                             {isOpen && (
                                                 <motion.tr
-                                                    initial={{ opacity: 0, height: 0 }}
-                                                    animate={{ opacity: 1, height: "auto" }}
-                                                    exit={{ opacity: 0, height: 0 }}
+                                                    layout
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    exit={{ opacity: 0 }}
+                                                    transition={{ duration: 0.3 }}
                                                     className="bg-blue-50"
                                                 >
                                                     <td colSpan="6" className="px-6 py-4 text-left text-gray-700">
-                                                        <div className="space-y-1">
+                                                        <motion.div layout className="space-y-1">
                                                             <div><strong>Phone:</strong> {student.phone || "—"}</div>
-                                                            <div><strong>Date of Birth:</strong> {student.dateOfBirth?.slice(0, 10) || "—"}</div>
+                                                            <div><strong>Date of Birth:</strong> {student.date_of_birth?.slice(0, 10) || "—"}</div>
                                                             <div><strong>Gender:</strong> {student.gender}</div>
-                                                            <div><strong>Student ID:</strong> {student.id}</div>
-                                                            <div><strong>Grades:</strong> {student.grades && student.grades.length > 0 ? (
-                                                                <div className="space-y-1 text-left text-sm">
-                                                                    {student.grades.map((grade, index) => (
-                                                                        <div key={index}>Grade {index + 1}: {grade.value}</div>
-                                                                    ))}
-                                                                    <div className="font-semibold text-blue-600">
-                                                                        Avg: {calculateAverage(student.grades)}
+                                                            <div><strong>Student ID:</strong> {student.student_id}</div>
+                                                            <div>
+                                                                <strong>Grades:</strong>{" "}
+                                                                {student.grades?.length > 0 ? (
+                                                                    <div className="space-y-1 text-left text-sm">
+                                                                        {student.grades.map((grade, index) => (
+                                                                            <div key={index}>Grade {index + 1}: {grade.grade_value}(Course ID: {grade.course_id})</div>
+                                                                        ))}
+                                                                        <div className="font-semibold text-blue-600">
+                                                                            Avg: {calculateAverage(student.grades)}
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                            ) : "-"}
+                                                                ) : "-"}
                                                             </div>
-                                                        </div>
+                                                        </motion.div>
                                                     </td>
                                                 </motion.tr>
                                             )}

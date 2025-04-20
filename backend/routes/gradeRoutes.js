@@ -1,29 +1,18 @@
-import express from 'express'; // Εισαγωγή του express
-import { 
+import express from "express";
+import {
   createGrade,
   getAllGrades,
-  getGradesByStudentId,
+  getGradeById,
   updateGrade,
-  deleteGrade 
-} from '../controllers/gradeController.js'; // Εισαγωγή των συναρτήσεων από τον controller
+  deleteGrade,
+} from "../controllers/gradeController.js";
 
-// Ορίζουμε το router
 const router = express.Router();
 
-// Δημιουργία νέου βαθμού
-router.post('/', createGrade);
+router.post("/", createGrade);
+router.get("/", getAllGrades);
+router.get("/:id", getGradeById);
+router.put("/:id", updateGrade);
+router.delete("/:id", deleteGrade);
 
-// Λήψη όλων των βαθμών
-router.get('/', getAllGrades);
-
-// Λήψη βαθμών για έναν συγκεκριμένο μαθητή
-router.get('/student/:student_id', getGradesByStudentId);
-
-// Ενημέρωση βαθμού
-router.put('/:grade_id', updateGrade);
-
-// Διαγραφή βαθμού
-router.delete('/:grade_id', deleteGrade);
-
-// Εξαγωγή του router για χρήση στο κύριο αρχείο app.js
 export default router;
