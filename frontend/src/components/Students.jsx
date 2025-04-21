@@ -257,22 +257,28 @@ const StudentsTable = () => {
 
             <AnimatePresence>
                 {showAddStudentForm && (
-                    <motion.div
-                        key="add-student-modal"
-                        className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{
-                            scale: { type: "spring", stiffness: 500, damping: 60 },
-                            opacity: { duration: 0.3 },
-                        }}
-                    >
-                        <AddStudentForm
-                            setShowAddStudentForm={setShowAddStudentForm}
-                            setStudents={setStudents}
-                        />
-                    </motion.div>
+                    <>
+                        {/* Background Gray */}
+                        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 z-40" />
+
+                        {/* Modal */}
+                        <motion.div
+                            key="add-student-modal"
+                            className="fixed inset-0 flex justify-center items-center z-50"
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            transition={{
+                                scale: { type: "spring", stiffness: 500, damping: 60 },
+                                opacity: { duration: 0.3 },
+                            }}
+                        >
+                            <AddStudentForm
+                                setShowAddStudentForm={setShowAddStudentForm}
+                                setStudents={setStudents}
+                            />
+                        </motion.div>
+                    </>
                 )}
             </AnimatePresence>
 
@@ -282,7 +288,7 @@ const StudentsTable = () => {
                         className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 , scale: 0.8 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
                         transition={{ duration: 0.3 }}
                     >
                         <motion.div

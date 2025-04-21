@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
-
 const AddTeacherForm = ({ setShowAddTeacherForm, setTeachers, courses }) => {
   const [formData, setFormData] = useState({
     first_name: '',
@@ -38,9 +37,9 @@ const AddTeacherForm = ({ setShowAddTeacherForm, setTeachers, courses }) => {
 
   return (
     <>
-      {/* Background */}
+      {/* Background Gray */}
       <motion.div
-        className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50"
+
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -49,7 +48,7 @@ const AddTeacherForm = ({ setShowAddTeacherForm, setTeachers, courses }) => {
 
       {/* Modal */}
       <motion.div
-        className="fixed inset-0 flex justify-center items-center z-50"
+        className="fixed inset-0 flex justify-center items-center"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 50 }}
@@ -123,10 +122,16 @@ const AddTeacherForm = ({ setShowAddTeacherForm, setTeachers, courses }) => {
                 className="w-4/5 p-2 border border-gray-300 rounded-lg"
                 required
               >
-                <option value="">Select Course</option>
+                {/* <option value="">Select Course</option>
                 {courses.map((course) => (
                   <option key={course.course_id} value={course.course_id}>
                     {course.name}
+                  </option>
+                ))} */}
+                <option value="">Select Course</option>
+                {courses.map((course) => (
+                  <option key={course.course_id} value={course.course_id}>
+                    {course.course_name} - Taught by {course.teacher.first_name} {course.teacher.last_name}
                   </option>
                 ))}
               </select>

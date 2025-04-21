@@ -2,6 +2,7 @@ import Teacher from "../models/teacher.js";
 import { teacherDTO, teachersListDTO } from "../DTO/teachersDTO.js";
 import Course from "../models/course.js"; // Εισαγωγή του μοντέλου Course
 import Class from "../models/class.js";
+import { TeacherDAO } from "../dao/teacherDAO.js";
 
 // Δημιουργία νέου δασκάλου
 export const createTecher = async (req, res) => {
@@ -24,7 +25,8 @@ export const createTecher = async (req, res) => {
 // Ανάκτηση όλων των δασκάλων
 export const getAllTeachers = async (req, res) => {
     try {
-        const teachers = await Teacher.findAll({
+        const teachers = await TeacherDAO.findAll({
+            attributes: ["teacher_id", "first_name", "last_name", "email",],
             include: [
                 {
                     model: Class,   // Βεβαιώσου ότι το Course είναι εισαγμένο σωστά
@@ -46,7 +48,7 @@ export const getAllTeachers = async (req, res) => {
 export const getTeacherById = async (req, res) => {
     const { id } = req.params;
     try {
-        const teacher = await Teacher.findByPk(id, {
+        const teacher = await TeacherDAO.findByPk(id, {
             include: [
                 {
                     model: Course,   // Εδώ επίσης το μοντέλο Course πρέπει να είναι εισαγμένο

@@ -29,6 +29,13 @@ const Teacher = sequelize.define('Teacher', {
     allowNull: false,
     defaultValue: 0,
   },
+  phone: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    validate: {
+      is: /^\+?[0-9\s]+$/i, 
+    },
+  },
 }, {
   tableName: 'teachers',
   timestamps: true,

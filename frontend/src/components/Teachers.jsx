@@ -15,6 +15,7 @@ const TeachersTable = () => {
   const [editingTeacher, setEditingTeacher] = useState(null);
   const [showAddTeacherForm, setShowAddTeacherForm] = useState(false);
   const [courses, setCourses] = useState([]);
+  const [classes, setClasses] = useState([]);
   const [editedTeacherData, setEditedTeacherData] = useState({
     first_name: "",
     last_name: "",
@@ -51,7 +52,18 @@ const TeachersTable = () => {
 
     fetchCourses();
   }, []);
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/api/classes");
+        setClasses(res.data);
+      } catch (err) {
+        console.error("Error fetching classes", err);
+      }
+    };
 
+    fetchClasses();
+  }, []);
 
   const toggleExpand = (id) => {
     setExpanded((prev) => (prev === id ? null : id));
@@ -81,11 +93,13 @@ const TeachersTable = () => {
   );
 
   const handleEditClick = (teacher) => {
+    console.log("Editing teacher:", teacher);
+
     setEditingTeacher(teacher);
     setEditedTeacherData({
-      first_name: teacher.first_name,
-      last_name: teacher.last_name,
-      email: teacher.email,
+      first_name: teacher.first_name || "",
+      last_name: teacher.last_name || "",
+      email: teacher.email || "",
       phone: teacher.phone || "",
       hire_date: teacher.hire_date || "",
       subject: teacher.course_id || "",
@@ -97,7 +111,7 @@ const TeachersTable = () => {
       await axios.put(`http://localhost:3000/api/teachers/${editingTeacher.teacher_id}`, editedTeacherData);
       setTeachers((prevTeachers) =>
         prevTeachers.map((teacher) =>
-          teacher.id === editingTeacherid
+          teacher.id === editingTeacher.teacher_id
             ? { ...teacher, ...editedTeacherData }
             : teacher
         )
@@ -173,6 +187,8 @@ const TeachersTable = () => {
             <tbody>
               {filteredTeachers.map((teacher, index) => {
                 const isOpen = expanded === teacher.id;
+                const assignedClass = classes.find((classItem) => classItem.teacher_id === teacher.id);
+                const assignedCourse = courses.filter((course) => course.teacher_id === teacher.id);
 
                 return (
                   <React.Fragment key={teacher.id}>
@@ -183,11 +199,11 @@ const TeachersTable = () => {
                     >
                       <td className="px-4 py-3">{index + 1}</td>
                       <td className="px-4 py-3 font-medium">
-                        {teacher.first_name} {teacher.last_name}
+                        {teacher.name}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500">{teacher.email || "-"}</td>
                       <td className="px-4 py-3 text-sm text-gray-500">{teacher.phone || "-"}</td>
-                      <td className="px-4 py-3 text-sm">{teacher.courses || "-"}</td>
+                      <td className="px-4 py-3 text-sm">{teacher.id || "-"}</td>
                       <td className="px-4 py-3">
                         <button
                           className="text-blue-500"
@@ -210,13 +226,22 @@ const TeachersTable = () => {
                         >
                           <td colSpan="6" className="px-6 py-4 text-left text-gray-700">
                             <div className="space-y-1">
-                              <div><strong>Hire Date:</strong> {teacher.hire_date || "—"}</div>
+                              <div><strong>Hire Date:</strong> {teacher.hired_date ? teacher.hired_date.slice(0, 7) : "—"}</div>
                               <div><strong>Phone:</strong> {teacher.phone || "—"}</div>
                               <div>
-                                <strong>Subject:</strong>{" "}
-                                {console.log("Teacher ID:", teacher.teacher_id, "Course ID:", teacher.course_id, "Matched:", courses.find((c) => c.course_id === teacher.course_id))}
-                                {courses.find((c) => c.course_id === teacher.course_id)?.name || "-"}
-
+                                <strong>Class Assigned:</strong>{" "}
+                                {assignedClass
+                                  ? `${assignedClass.class_name} (${assignedClass.class_type})`
+                                  : "No class assigned"}
+                              </div>
+                              <div>
+                                <strong>Course Assigned:</strong>{" "}
+                                {/* {assignedCourse.length > 0 ? assignedCourse.map((course) => course.course_name).join(", ") : "No course assigned"} */}
+                                {assignedCourse.length > 0
+                                  ? assignedCourse
+                                    .map((course) => course.course_name.charAt(0).toUpperCase() + course.course_name.slice(1))
+                                    .join(", ")
+                                  : "No course assigned"}
                               </div>
                             </div>
                           </td>
@@ -234,23 +259,29 @@ const TeachersTable = () => {
       {/* Add Teacher Form */}
       <AnimatePresence>
         {showAddTeacherForm && (
-          <motion.div
-            key="add-teacher-modal"
-            className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{
-              scale: { type: "spring", stiffness: 500, damping: 60 },
-              opacity: { duration: 0.3 },
-            }}
-          >
-            <AddTeacherForm
-              setShowAddTeacherForm={setShowAddTeacherForm}
-              setTeachers={setTeachers}
-              courses={courses}
-            />
-          </motion.div>
+          <>
+            {/* Background Gray */}
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-50 z-40" />
+
+            {/* Modal */}
+            <motion.div
+              key="add-teacher-modal"
+              className="fixed inset-0 flex justify-center items-center z-50"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{
+                scale: { type: "spring", stiffness: 500, damping: 60 },
+                opacity: { duration: 0.3 },
+              }}
+            >
+              <AddTeacherForm
+                setShowAddTeacherForm={setShowAddTeacherForm}
+                setTeachers={setTeachers}
+                courses={courses}
+              />
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
       <AnimatePresence>
@@ -266,27 +297,17 @@ const TeachersTable = () => {
             >
               <h2 className="text-2xl font-bold mb-4">Edit Teacher</h2>
 
-              <div className="mb-1">
-                <input
-                  type="text"
-                  name="first_name"
-                  value={editedTeacherData.first_name}
-                  readOnly
-                  onChange={handleChange}
-                  className="w-4/5 p-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-
               <div className="mb-2">
                 <input
                   type="text"
-                  name="last_name"
-                  value={editedTeacherData.last_name}
+                  name="name"
+                  value={editingTeacher?.name || ""}
                   readOnly
-                  onChange={handleChange}
                   className="w-4/5 p-2 border border-gray-300 rounded-lg"
                 />
               </div>
+              {/* const [first_name, last_name] = teacher.name.split(" "); */}
+
 
               <div className="mb-2">
                 <input
@@ -324,9 +345,9 @@ const TeachersTable = () => {
               </div>
             </motion.div>
           </div>
-          
+
         )}
-          </AnimatePresence>
+      </AnimatePresence>
     </div>
   );
 };
