@@ -102,16 +102,19 @@ const TeachersTable = () => {
       email: teacher.email || "",
       phone: teacher.phone || "",
       hire_date: teacher.hire_date || "",
-      subject: teacher.course_id || "",
+      course: teacher.course_id || "",
     });
   };
 
   const handleSaveChanges = async () => {
+    console.log("Editing Teacher ID:", editingTeacher.id); // Δείτε αν το id είναι σωστό
+    console.log("Edited Teacher Data:", editedTeacherData); // Δείτε τα δεδομένα που στέλνετε
+
     try {
-      await axios.put(`http://localhost:3000/api/teachers/${editingTeacher.teacher_id}`, editedTeacherData);
+      await axios.put(`http://localhost:3000/api/teachers/${editingTeacher.id}`, editedTeacherData);
       setTeachers((prevTeachers) =>
         prevTeachers.map((teacher) =>
-          teacher.id === editingTeacher.teacher_id
+          teacher.id === editingTeacher.id
             ? { ...teacher, ...editedTeacherData }
             : teacher
         )
@@ -119,7 +122,7 @@ const TeachersTable = () => {
       setEditingTeacher(null);
       toast.success("Changes saved successfully!");
     } catch (error) {
-      console.error("Error saving changes:", error);
+      console.error("Error saving changes:", error.response?.data || error.message);
       toast.error("Error saving changes.");
     }
   };
@@ -199,7 +202,7 @@ const TeachersTable = () => {
                     >
                       <td className="px-4 py-3">{index + 1}</td>
                       <td className="px-4 py-3 font-medium">
-                        {teacher.name}
+                        {teacher.first_name} {teacher.last_name}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500">{teacher.email || "-"}</td>
                       <td className="px-4 py-3 text-sm text-gray-500">{teacher.phone || "-"}</td>
@@ -301,12 +304,21 @@ const TeachersTable = () => {
                 <input
                   type="text"
                   name="name"
-                  value={editingTeacher?.name || ""}
+                  value={editedTeacherData.first_name || ""}
                   readOnly
                   className="w-4/5 p-2 border border-gray-300 rounded-lg"
                 />
               </div>
-              {/* const [first_name, last_name] = teacher.name.split(" "); */}
+              <div className="mb-2">
+                <input
+                  type="text"
+                  name="name"
+                  value={editedTeacherData.last_name || ""}
+                  readOnly
+                  className="w-4/5 p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+
 
 
               <div className="mb-2">
@@ -328,7 +340,25 @@ const TeachersTable = () => {
                   className="w-4/5 p-2 border border-gray-300 rounded-lg"
                 />
               </div>
-
+              <div className="mb-4">
+                <label htmlFor="course" className="block text-sm font-medium text-gray-700">
+                  Select Course
+                </label>
+                <select
+                  id="course"
+                  name="course"
+                  value={editedTeacherData.course || ""}
+                  onChange={handleChange}
+                  className="w-4/5 p-2 border border-gray-300 rounded-lg"
+                >
+                  <option value="">Select a course</option>
+                  {courses.map((course) => (
+                    <option key={course.id} value={course.id}>
+                      {course.course_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="flex justify-center space-x-4 mt-6">
                 <button
                   onClick={() => setEditingTeacher(null)}
