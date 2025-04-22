@@ -11,7 +11,14 @@ export const StudentDAO = {
           {
             model: Grade,
             as: "studentGrades", // Alias για τη συσχέτιση με το Grade
-          
+            attributes: ["grade_value", "course_id", "grade_date"], // Επιστροφή πεδίων από το Grade
+            include: [
+              {
+                model: Course,
+                as: "course", // Alias για τη συσχέτιση με το Course
+                attributes: ["course_name"], // Επιστροφή του course_name
+              },
+            ],
           },
           {
             model: Course,
@@ -36,7 +43,14 @@ export const StudentDAO = {
           {
             model: Grade,
             as: "studentGrades", // Alias για τη συσχέτιση με το Grade
-            attributes: ["grade"],
+            attributes: ["grade_value", "course_id", "grade_date"], // Επιστροφή πεδίων από το Grade
+            include: [
+              {
+                model: Course,
+                as: "course", // Alias για τη συσχέτιση με το Course
+                attributes: ["course_name"], // Επιστροφή του course_name
+              },
+            ],
           },
           {
             model: Course,

@@ -23,24 +23,13 @@ const StudentsTable = () => {
         date_of_birth: "",
         phone: "",
     });
-
     useEffect(() => {
         axios
             .get("http://localhost:3000/api/students")
             .then((res) => {
-                const studentsWithCourses = res.data.map(student => ({
-                    ...student,
-                    courses: student.courses?.map(c => ({
-                        id: c.course_id,
-                        name: c.name,
-                        description: c.description,
-                    })) || []
-                }));
-
-                setTimeout(() => {
-                    setStudents(studentsWithCourses);
-                    setLoading(false);
-                }, 1000);
+                console.log(res.data); 
+                setStudents(res.data);
+                setLoading(false);
             })
             .catch((err) => {
                 console.error("Error loading students", err);
@@ -68,8 +57,8 @@ const StudentsTable = () => {
     const handleSort = () => {
         const sortedStudents = [...students];
         sortedStudents.sort((a, b) => {
-            const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
-            const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+            const nameA = `${a.first_name} ${a.last_name}`.toLowerCase();
+            const nameB = `${b.first_name} ${b.last_name}`.toLowerCase();
 
             return sortOrder === "asc"
                 ? nameA.localeCompare(nameB)
@@ -233,8 +222,9 @@ const StudentsTable = () => {
                                                                     <ul>
                                                                         {student.studentGrades.map((grade, index) => (
                                                                             <li key={index}>
-                                                                                Grade: {grade.grade_value} (Course: {grade.course?.course_name || "Unknown"})
+                                                                                Grade: {grade.grade_value} (Course: {grade.course?.course_name  || "Unknown"})
                                                                             </li>
+                                                                            
                                                                         ))}
                                                                     </ul>
                                                                 ) : (
@@ -244,19 +234,21 @@ const StudentsTable = () => {
 
                                                             <div><strong>Gender:</strong> {student.gender}</div>
                                                             <div><strong>Student ID:</strong> {student.student_id}</div>
-                                                            <div>
+                                                            {/* <div>
                                                                 <strong>Grades:</strong>{" "}
-                                                                {student.grades?.length > 0 ? (
-                                                                    <div className="space-y-1 text-left text-sm">
-                                                                        {student.grades.map((grade, index) => (
-                                                                            <div key={index}>Grade {index + 1}: {grade.grade_value}(Course ID: {grade.course_id})</div>
+                                                                {student.studentGrades?.length > 0 ? (
+                                                                    <ul>
+                                                                        {student.studentGrades.map((grade, index) => (
+                                                                            <li key={index}>
+                                                                                Grade: {grade.grade_value} (Course: {grade.course?.course_name || "Unknown"})
+                                                                            </li>
                                                                         ))}
-                                                                        <div className="font-semibold text-blue-600">
-                                                                            Avg: {calculateAverage(student.grades)}
-                                                                        </div>
-                                                                    </div>
-                                                                ) : "-"}
-                                                            </div>
+                                                                    </ul>
+                                                                ) : (
+                                                                    "No grades available"
+                                                                )}
+                                                            </div> */}
+
                                                         </motion.div>
                                                     </td>
                                                 </motion.tr>

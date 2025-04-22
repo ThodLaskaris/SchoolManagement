@@ -183,7 +183,7 @@ const AddStudentForm = ({ setShowAddStudentForm, setStudents }) => {
                     {classes.length > 0 ? (
                       classes.map((cls) => (
                         <option key={cls.class_id} value={cls.class_id}>
-                          {`${cls.class_name} - ${cls.class_type} (${cls.Teacher?.first_name} ${cls.Teacher?.last_name})`}
+                          {`${cls.class_name} - ${cls.class_type} (${cls.teacher?.first_name} ${cls.teacher?.last_name})`}
                         </option>
                       ))
                     ) : (

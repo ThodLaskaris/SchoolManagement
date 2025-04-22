@@ -1,6 +1,7 @@
 import Student from "../models/student.js";
 import Class from "../models/class.js";
 import Grade from "../models/grades.js";
+import Course from "../models/course.js";
 import { Op } from "sequelize";
 
 // Στατιστικά φύλου
@@ -99,8 +100,15 @@ export const getAllStudents = async (req, res) => {
         },
         {
           model: Grade,
-          attributes: ["grade_value", "course_id", "grade_date"], // Προσαρμόστε τα πεδία που θέλετε
+          attributes: ["grade_value", "course_id", "grade_date"],
           as: "studentGrades",
+          include: [
+            {
+              model: Course,
+              attributes: ["course_name"], // Συμπεριλάβετε το course_name
+              as: "course",
+            },
+          ],
         },
       ],
     });
