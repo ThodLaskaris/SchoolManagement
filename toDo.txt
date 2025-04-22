@@ -21,8 +21,13 @@
 
 
 
-Φτιαξε το models/backend για Gender,Class
-το ιδιο για St
+BackEnd
+Add Teacher(Course)
+Edit Teacher(Course)
+
+Add Course Teacher( via Name and not ID)
+
+grade
 
 
 

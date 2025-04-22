@@ -227,6 +227,21 @@ const StudentsTable = () => {
                                                         <motion.div layout className="space-y-1">
                                                             <div><strong>Phone:</strong> {student.phone || "—"}</div>
                                                             <div><strong>Date of Birth:</strong> {student.date_of_birth?.slice(0, 10) || "—"}</div>
+                                                            <div>
+                                                                <strong>Grades:</strong>{" "}
+                                                                {student.studentGrades?.length > 0 ? (
+                                                                    <ul>
+                                                                        {student.studentGrades.map((grade, index) => (
+                                                                            <li key={index}>
+                                                                                Grade: {grade.grade_value} (Course: {grade.course?.course_name || "Unknown"})
+                                                                            </li>
+                                                                        ))}
+                                                                    </ul>
+                                                                ) : (
+                                                                    "No grades available"
+                                                                )}
+                                                            </div>
+
                                                             <div><strong>Gender:</strong> {student.gender}</div>
                                                             <div><strong>Student ID:</strong> {student.student_id}</div>
                                                             <div>

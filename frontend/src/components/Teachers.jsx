@@ -183,7 +183,7 @@ const TeachersTable = () => {
                 </th>
                 <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Phone</th>
-                <th className="px-4 py-3">Subject</th>
+                <th className="px-4 py-3">ID</th>
                 <th className="px-4 py-3">Actions</th>
               </tr>
             </thead>
