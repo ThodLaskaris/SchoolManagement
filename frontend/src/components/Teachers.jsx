@@ -102,7 +102,7 @@ const TeachersTable = () => {
       email: teacher.email || "",
       phone: teacher.phone || "",
       hire_date: teacher.hire_date || "",
-      course: teacher.course_id || "",
+      course: teacher.courses && teacher.courses.length > 0 ? teacher.courses[0].id : "",
     });
   };
 
@@ -111,7 +111,13 @@ const TeachersTable = () => {
     console.log("Edited Teacher Data:", editedTeacherData); // Δείτε τα δεδομένα που στέλνετε
 
     try {
-      await axios.put(`http://localhost:3000/api/teachers/${editingTeacher.id}`, editedTeacherData);
+      // Στέλνουμε το course_id μαζί με τα υπόλοιπα δεδομένα
+      await axios.put(`http://localhost:3000/api/teachers/${editingTeacher.id}`, {
+        ...editedTeacherData,
+        course_id: editedTeacherData.course, // Προσθέτουμε το course_id
+      });
+
+      // Ενημερώνουμε την κατάσταση των δασκάλων στο frontend
       setTeachers((prevTeachers) =>
         prevTeachers.map((teacher) =>
           teacher.id === editingTeacher.id
@@ -119,7 +125,8 @@ const TeachersTable = () => {
             : teacher
         )
       );
-      setEditingTeacher(null);
+
+      setEditingTeacher(null); // Κλείνουμε το modal
       toast.success("Changes saved successfully!");
     } catch (error) {
       console.error("Error saving changes:", error.response?.data || error.message);
@@ -127,11 +134,18 @@ const TeachersTable = () => {
     }
   };
 
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setEditedTeacherData((prevData) => ({
+  //     ...prevData,
+  //     [name]: name === "course" ? parseInt(value) : value,
+  //   }));
+  // };
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEditedTeacherData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: name === "course" ? parseInt(value) : value, // Μετατροπή σε αριθμό για το course
     }));
   };
 

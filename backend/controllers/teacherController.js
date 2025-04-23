@@ -118,7 +118,8 @@ export const getTeacherById = async (req, res) => {
 // Ενημέρωση δασκάλου
 export const updateTeacher = async (req, res) => {
     const { id } = req.params;
-    const { first_name, last_name, email, phone } = req.body;
+    const { first_name, last_name, email, phone, course_id } = req.body;
+
     try {
         const teacher = await Teacher.findByPk(id);
         if (!teacher) {
@@ -126,12 +127,31 @@ export const updateTeacher = async (req, res) => {
                 message: "Teacher not found",
             });
         }
-        teacher.first_name = first_name || teacher.first_name;
-        teacher.last_name = last_name || teacher.last_name;
+
+        // Ενημέρωση των πεδίων του δασκάλου
+        
         teacher.email = email || teacher.email;
         teacher.phone = phone || teacher.phone;
+        teacher.course_id = course_id || teacher.course_id;
         await teacher.save();
-        return res.status(200).json(teacherDTO(teacher));
+
+        // Αν έχει δοθεί ένα μάθημα, πρόσθεσέ το στον δάσκαλο
+        if (course_id) {
+            await teacher.addTeacherCourses([course_id]); // Προσθέτει το νέο μάθημα χωρίς να αφαιρεί τα υπάρχοντα
+        }
+
+        // Επιστροφή του δασκάλου μαζί με τα μαθήματα
+        const updatedTeacher = await Teacher.findByPk(id, {
+            include: [
+                {
+                    model: Course,
+                    as: "teacherCourses",
+                    attributes: ["course_id", "course_name", "course_description"],
+                },
+            ],
+        });
+
+        return res.status(200).json(teacherDTO(updatedTeacher));
     } catch (error) {
         console.error("Error updating teacher:", error);
         return res.status(500).json({
