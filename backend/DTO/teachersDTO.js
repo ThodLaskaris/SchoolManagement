@@ -6,6 +6,11 @@ export const teacherDTO = (teacher) => ({
   email: teacher.email,
   phone: teacher.phone,
   hired_date: teacher.created_at,
+  courses: teacher.teacherCourses?.map((course) => ({
+    id: course.course_id,
+    name: course.course_name,
+    description: course.course_description,
+  })) || [],
 });
 
 export const teachersListDTO = (teachers) => teachers.map(teacherDTO);

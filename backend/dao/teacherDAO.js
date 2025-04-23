@@ -4,12 +4,26 @@ export const TeacherDAO = {
   async findAll() {
     return await Teacher.findAll({
       attributes: ["teacher_id", "first_name", "last_name", "email", "phone","created_at"],
+      include: [
+        {
+          model: Model,
+          as: "teacherCourses",
+          attributes: ["course_id", "course_name", "course_description"],
+        },
+      ],
     });
   },
 
   async findById(id) {
     return await Teacher.findByPk(id, {
       attributes: ["teacher_id", "first_name", "last_name", "email", "phone", "created_at"],
+      include: [
+        {
+          model: Model,
+          as: "teacherCourses",
+          attributes: ["course_id", "course_name", "course_description"],
+        },
+      ],
     });
   },
 
