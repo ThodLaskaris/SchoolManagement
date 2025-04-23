@@ -1,6 +1,8 @@
 // src/App.jsx
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // Χρησιμοποιούμε Routes και Route
+import { ToastContainer } from "react-toastify"; // Εισαγωγή του ToastContainer
+import "react-toastify/dist/ReactToastify.css"; // Εισαγωγή του CSS για το Toast
 import Footer from "./components/Footer";
 import NavBar from "./components/NavBar";
 import ThemeToggle from './components/ThemeToggle';
@@ -12,8 +14,6 @@ import Classes from './components/Classes';
 import Subjects from './components/Subjects';
 import AdminDashboard from './components/AdminDashboard';
 import TeachersTable from './components/Teachers';
-
-//import StudentsTable from './components/StudentsTable';
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Διαχείριση του login status
@@ -29,6 +29,17 @@ export default function App() {
         {/* Navigation Bar */}
         <NavBar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
 
+        {/* ToastContainer */}
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          closeOnClick={true}
+          pauseOnHover={true}
+          draggable={true}
+          limit={1} // Εμφανίζει μόνο 1 Toast τη φορά
+        />
+
         {/* Main Content */}
         <main className="flex-grow container mx-auto p-8 text-center space-y-1">
           <h1 className="text-4xl  mb-9">Welcome to Students User Management System v1</h1>
@@ -42,7 +53,6 @@ export default function App() {
           </p>
           <div className="bg-white p-0 w-42 rounded-2xl shadow-md">
             <p className="text-gray-700">This is a Demo version.</p>
-            
           </div>
 
           {/* Δρομολόγηση */}
@@ -54,9 +64,7 @@ export default function App() {
             <Route path="/classes" element={isLoggedIn ? <Classes /> : <Navigate to="/login" />} />
             <Route path="/subjects" element={isLoggedIn ? <Subjects /> : <Navigate to="/login" />} />
             <Route path="/students" element={isLoggedIn ? <StudentsTable /> : <Navigate to="/login" />} />
-
           </Routes>
-
         </main>
 
         {/* Footer */}
