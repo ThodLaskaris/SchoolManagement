@@ -239,12 +239,15 @@ const TeachersTable = () => {
                               </div>
                               <div>
                                 <strong>Course Assigned:</strong>{" "}
-                                {/* {assignedCourse.length > 0 ? assignedCourse.map((course) => course.course_name).join(", ") : "No course assigned"} */}
-                                {assignedCourse.length > 0
-                                  ? assignedCourse
-                                    .map((course) => course.course_name.charAt(0).toUpperCase() + course.course_name.slice(1))
-                                    .join(", ")
-                                  : "No course assigned"}
+                                {teacher.courses && teacher.courses.length > 0 ? (
+                                  teacher.courses.map((course) => (
+                                    <span key={course.id}>
+                                      {course.name} ({course.description})
+                                    </span>
+                                  ))
+                                ) : (
+                                  "No course assigned"
+                                )}
                               </div>
                             </div>
                           </td>

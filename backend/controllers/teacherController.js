@@ -5,23 +5,59 @@ import Class from "../models/class.js";
 import { TeacherDAO } from "../dao/teacherDAO.js";
 
 // Δημιουργία νέου δασκάλου
+// export const createTecher = async (req, res) => {
+//     try {
+//         const { first_name, last_name, email, phone, course_id } = req.body;
+//         const teacher = await Teacher.create({
+//             first_name,
+//             last_name,
+//             email,
+//             phone,
+//         });
+//         return res.status(201).json(teacher);
+//     } catch (error) {
+//         return res.status(500).json({
+//             message: error.message,
+//         });
+//     }
+// };
+
 export const createTecher = async (req, res) => {
     try {
-        const { first_name, last_name, email, phone } = req.body;
+        const { first_name, last_name, email, phone, course_id } = req.body;
+
+        // Δημιουργία του δασκάλου
         const teacher = await Teacher.create({
             first_name,
             last_name,
             email,
             phone,
         });
-        return res.status(201).json(teacher);
+
+        // Αν έχει δοθεί ένα μάθημα, σύνδεσέ το με τον δάσκαλο
+        if (course_id) {
+            await teacher.addTeacherCourses([course_id]); // Χρησιμοποιούμε τη μέθοδο του Sequelize
+        }
+
+        // Επιστροφή του δασκάλου μαζί με το μάθημα
+        const teacherWithCourse = await Teacher.findByPk(teacher.teacher_id, {
+            include: [
+                {
+                    model: Course,
+                    as: "teacherCourses",
+                    attributes: ["course_id", "course_name", "course_description"],
+                },
+            ],
+        });
+
+        return res.status(201).json(teacherWithCourse);
     } catch (error) {
+        console.error("Error creating teacher:", error);
         return res.status(500).json({
             message: error.message,
         });
     }
 };
-
 // Ανάκτηση όλων των δασκάλων
 export const getAllTeachers = async (req, res) => {
     try {
