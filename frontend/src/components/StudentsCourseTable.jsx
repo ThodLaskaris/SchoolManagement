@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const StudentsCourseTable = ({ students, setStudents, searchTerm = "" }) => {
     const [editingGrade, setEditingGrade] = useState(null); // Track the grade being edited
     const [newGradeValue, setNewGradeValue] = useState(""); // Track the new grade value
@@ -18,7 +21,7 @@ const StudentsCourseTable = ({ students, setStudents, searchTerm = "" }) => {
             student.studentGrades[gradeIndex].grade_value = newGradeValue;
 
             // Send the updated grade to the backend
-            await axios.put(`http://localhost:3000/api/students/${studentId}/grades`, {
+            await axios.put(`http://localhost:3000/api/grades/${studentId}`, {
                 gradeIndex,
                 grade_value: newGradeValue,
             });
@@ -26,14 +29,22 @@ const StudentsCourseTable = ({ students, setStudents, searchTerm = "" }) => {
             // Update the state
             setStudents(updatedStudents);
             setEditingGrade(null); // Exit editing mode
+            toast.success("Grade updated successfully!");
         } catch (error) {
             console.error("Error updating grade:", error);
+            toast.error("Failed to update grade. Please try again.");
         }
     };
 
     const handleBlur = (studentId, gradeIndex) => {
         setEditingGrade(null); // Exit editing mode
         handleSaveClick(studentId, gradeIndex);
+    };
+
+    const calculateAverage = (grades) => {
+        if (!grades || grades.length === 0) return "N/A"; // If no grades, return "N/A"
+        const total = grades.reduce((sum, grade) => sum + parseFloat(grade.grade_value || 0), 0);
+        return (total / grades.length).toFixed(2); // Return average with 2 decimal places
     };
 
     // Φιλτράρισμα των μαθητών με βάση το searchTerm
@@ -45,6 +56,7 @@ const StudentsCourseTable = ({ students, setStudents, searchTerm = "" }) => {
 
     return (
         <div className="bg-white p-4 rounded-2xl shadow-xl overflow-x-auto">
+    
             <motion.table
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -56,6 +68,7 @@ const StudentsCourseTable = ({ students, setStudents, searchTerm = "" }) => {
                         <th className="px-4 py-3">Student Name</th>
                         <th className="px-4 py-3">Course</th>
                         <th className="px-4 py-3">Grades</th>
+                        <th className="px-4 py-3">Average</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -88,8 +101,8 @@ const StudentsCourseTable = ({ students, setStudents, searchTerm = "" }) => {
                                         {student.studentGrades.map((grade, gradeIndex) => (
                                             <div key={gradeIndex}>
                                                 {editingGrade &&
-                                                    editingGrade.studentId === student.student_id &&
-                                                    editingGrade.gradeIndex === gradeIndex ? (
+                                                editingGrade.studentId === student.student_id &&
+                                                editingGrade.gradeIndex === gradeIndex ? (
                                                     <input
                                                         type="number"
                                                         value={newGradeValue}
@@ -125,6 +138,9 @@ const StudentsCourseTable = ({ students, setStudents, searchTerm = "" }) => {
                                 ) : (
                                     <span className="text-gray-500">No grades available</span>
                                 )}
+                            </td>
+                            <td className="px-4 py-3 text-sm font-bold text-gray-700">
+                                {calculateAverage(student.studentGrades)}
                             </td>
                         </tr>
                     ))}

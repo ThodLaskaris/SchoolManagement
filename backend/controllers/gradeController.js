@@ -76,15 +76,48 @@ export const updateGrade = async (req, res) => {
   const { id } = req.params;
   const { grade_value, grade_date } = req.body;
   try {
-    const grade = await Grade.findByPk(id);
+    const grade = await Grade.findByPk(id, {
+      include: [
+        {
+          model: Student,
+          attributes: ["first_name", "last_name"],
+          as: "student",
+        },
+        {
+          model: Course,
+          attributes: ["course_name"],
+          as: "course",
+        },
+      ],
+    });
+
     if (!grade) {
       return res.status(404).json({ message: "Grade not found" });
     }
+
+    // Ενημέρωση των πεδίων του βαθμού
     grade.grade_value = grade_value || grade.grade_value;
     grade.grade_date = grade_date || grade.grade_date;
 
     await grade.save();
-    return res.status(200).json(grade);
+
+    // Επιστροφή του ενημερωμένου βαθμού
+    const updatedGrade = await Grade.findByPk(id, {
+      include: [
+        {
+          model: Student,
+          attributes: ["first_name", "last_name"],
+          as: "student",
+        },
+        {
+          model: Course,
+          attributes: ["course_name"],
+          as: "course",
+        },
+      ],
+    });
+
+    return res.status(200).json(updatedGrade);
   } catch (error) {
     console.error("Error updating grade:", error);
     return res.status(500).json({ message: error.message });
