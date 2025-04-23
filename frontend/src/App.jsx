@@ -37,7 +37,7 @@ export default function App() {
           closeOnClick={true}
           pauseOnHover={true}
           draggable={true}
-          limit={1} // Εμφανίζει μόνο 1 Toast τη φορά
+          limit={1} 
         />
 
         {/* Main Content */}
