@@ -87,18 +87,18 @@ const StudentsTable = () => {
     const handleEditClick = (student) => {
         setEditingStudent(student);
         setEditedStudentData({
-            firstName: student.firstName,
-            lastName: student.lastName,
+            first_name: student.first_name,
+            last_name: student.last_name,
             email: student.email,
-            grades: student.grades,
-            date_of_birth: student.date_of_birth,
             phone: student.phone || "",
         });
     };
 
     const handleSaveChanges = async () => {
         try {
-            await axios.put(`http://localhost:3000/api/students/${editingStudent.id}`, editedStudentData);
+            console.log("Editing student:", editingStudent);
+            console.log("Edited data:", editedStudentData);
+            await axios.put(`http://localhost:3000/api/students/${editingStudent.student_id}`, editedStudentData);
             setStudents((prevStudents) =>
                 prevStudents.map((student) =>
                     student.student_id === editingStudent.student_id

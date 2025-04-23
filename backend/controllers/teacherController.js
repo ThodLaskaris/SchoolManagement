@@ -33,6 +33,7 @@ export const getAllTeachers = async (req, res) => {
                     as: "teacherClasses",
                     attributes: ["class_name", "schedule"],
                 },
+                
             ],
         });
         const teacherData = teachersListDTO(teachers);
