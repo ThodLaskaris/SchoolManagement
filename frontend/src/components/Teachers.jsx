@@ -102,17 +102,15 @@ const TeachersTable = () => {
       email: teacher.email || "",
       phone: teacher.phone || "",
       hire_date: teacher.hire_date || "",
-      course: teacher.courses && teacher.courses.length > 0 ? teacher.courses[0].id : "",
+      course: teacher.courses && teacher.courses.length > 0 ? teacher.courses[0].id : "", // Παίρνουμε το πρώτο μάθημα
     });
   };
-
   const handleSaveChanges = async () => {
     console.log("Editing Teacher ID:", editingTeacher.id); // Δείτε αν το id είναι σωστό
     console.log("Edited Teacher Data:", editedTeacherData); // Δείτε τα δεδομένα που στέλνετε
 
     try {
-      // Στέλνουμε το course_id μαζί με τα υπόλοιπα δεδομένα
-      await axios.put(`http://localhost:3000/api/teachers/${editingTeacher.id}`, {
+      const response = await axios.put(`http://localhost:3000/api/teachers/${editingTeacher.id}`, {
         ...editedTeacherData,
         course_id: editedTeacherData.course, // Προσθέτουμε το course_id
       });
@@ -121,7 +119,7 @@ const TeachersTable = () => {
       setTeachers((prevTeachers) =>
         prevTeachers.map((teacher) =>
           teacher.id === editingTeacher.id
-            ? { ...teacher, ...editedTeacherData }
+            ? response.data // Ενημερώνουμε με τα δεδομένα από το backend
             : teacher
         )
       );
@@ -255,9 +253,9 @@ const TeachersTable = () => {
                                 <strong>Course Assigned:</strong>{" "}
                                 {teacher.courses && teacher.courses.length > 0 ? (
                                   teacher.courses.map((course) => (
-                                    <span key={course.id}>
+                                    <div key={course.id}>
                                       {course.name} ({course.description})
-                                    </span>
+                                    </div>
                                   ))
                                 ) : (
                                   "No course assigned"
@@ -357,25 +355,7 @@ const TeachersTable = () => {
                   className="w-4/5 p-2 border border-gray-300 rounded-lg"
                 />
               </div>
-              <div className="mb-4">
-                <label htmlFor="course" className="block text-sm font-medium text-gray-700">
-                  Select Course
-                </label>
-                <select
-                  id="course"
-                  name="course"
-                  value={editedTeacherData.course || ""}
-                  onChange={handleChange}
-                  className="w-4/5 p-2 border border-gray-300 rounded-lg"
-                >
-                  <option value="">Select a course</option>
-                  {courses.map((course) => (
-                    <option key={course.id} value={course.id}>
-                      {course.course_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+
               <div className="flex justify-center space-x-4 mt-6">
                 <button
                   onClick={() => setEditingTeacher(null)}
