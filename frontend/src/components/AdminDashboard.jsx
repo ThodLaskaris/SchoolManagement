@@ -35,7 +35,7 @@ const AdminDashboard = () => {
 
     // Ανάκτηση δεδομένων για το γράφημα
     axios
-      .get("http://localhost:3000/api/enrollments-stats")
+      .get("http://localhost:3000/api/students/enrollments-stats")
       .then((response) => {
         setEnrollmentStats(response.data);
       })

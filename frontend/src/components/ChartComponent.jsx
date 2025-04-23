@@ -24,7 +24,7 @@ const ChartComponent = ({ data }) => {
         label: 'Enrollments',
         data: data, // Τα δεδομένα που ήρθαν από το backend
         fill: false,
-        borderColor: 'rgb(75, 192, 192)', // Χρώμα γραμμής
+        borderColor: 'rgb(37, 99, 235)', // Χρώμα γραμμήςrgb(75, 192, 192)'
         tension: 0.3
       }
     ]

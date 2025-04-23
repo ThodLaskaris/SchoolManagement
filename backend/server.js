@@ -28,6 +28,8 @@ app.use("/api/classes", classRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/teachers", teacherRoutes);
 app.use("/api/grades", gradeRoutes);
+app.use("/api/enrollments-stats", studentRoutes);
+app.use("/api/students/gender-stats", studentRoutes);
 
 // Σύνδεση με τη βάση δεδομένων και εκκίνηση του server
 (async () => {
