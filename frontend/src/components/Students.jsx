@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import AddStudentForm from "./AddStudentForm";
+import StudentCourseTable from "./StudentsCourseTable";
 
 const StudentsTable = () => {
     const [students, setStudents] = useState([]);
@@ -13,6 +14,8 @@ const StudentsTable = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [placeholderText, setPlaceholderText] = useState("Search by name or ID");
     const [sortOrder, setSortOrder] = useState("asc");
+    const [selectedStudentId, setSelectedStudentId] = useState(null);
+    const [showGradesTable, setShowGradesTable] = useState(false);
     const [editingStudent, setEditingStudent] = useState(null);
     const [showAddStudentForm, setShowAddStudentForm] = useState(false);
     const [editedStudentData, setEditedStudentData] = useState({
@@ -23,11 +26,12 @@ const StudentsTable = () => {
         date_of_birth: "",
         phone: "",
     });
+
     useEffect(() => {
         axios
             .get("http://localhost:3000/api/students")
             .then((res) => {
-                console.log(res.data); 
+                console.log(res.data);
                 setStudents(res.data);
                 setLoading(false);
             })
@@ -130,145 +134,145 @@ const StudentsTable = () => {
                 Students
             </motion.h1>
 
-            <div className="mb-4 flex justify-between items-center">
+            <div className="mb-4 flex items-center">
                 <button
                     onClick={() => setShowAddStudentForm(true)}
                     className="bg-blue-500 text-white px-4 py-2 rounded-md shadow"
                 >
                     + Add Student
                 </button>
-
+                <button
+                    onClick={() => setShowGradesTable((prev) => !prev)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md shadow ml-4"
+                >
+                    {showGradesTable ? "Back to Students" : "Show Grades"}
+                </button>
                 <input
                     type="text"
                     value={searchTerm}
                     onChange={handleSearch}
                     placeholder={placeholderText}
-                    className="p-2 border border-gray-300 rounded-lg w-49"
+                    className="p-2 border border-gray-300 rounded-lg w-49 ml-auto"
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                 />
             </div>
 
-            <div className="bg-white p-4 rounded-2xl shadow-xl overflow-x-auto">
-                {loading ? (
-                    <div className="flex justify-center items-center h-48">
-                        <ClipLoader color="#3B82F6" loading={loading} size={50} />
-                    </div>
-                ) : (
-                    <motion.table
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="min-w-full table-auto"
-                    >
-                        <thead>
-                            <tr className="text-center border-b text-gray-600">
-                                <th className="px-4 py-3">#</th>
-                                <th className="px-4 py-3 cursor-pointer" onClick={handleSort}>
-                                    Full Name {sortOrder === "asc" ? "↑" : "↓"}
-                                </th>
-                                <th className="px-4 py-3">Email</th>
-                                <th className="px-4 py-3">Average Grades</th>
-                                <th className="px-4 py-3">Class</th>
-                                <th className="px-4 py-3">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredStudents.map((student, index) => {
-                                const isOpen = expanded === student.student_id;
+            {!showGradesTable ? (
+                <div className="bg-white p-4 rounded-2xl shadow-xl overflow-x-auto">
+                    {loading ? (
+                        <div className="flex justify-center items-center h-48">
+                            <ClipLoader color="#3B82F6" loading={loading} size={50} />
+                        </div>
+                    ) : (
+                        <motion.table
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="min-w-full table-auto"
+                        >
+                            <thead>
+                                <tr className="text-center border-b text-gray-600">
+                                    <th className="px-4 py-3">#</th>
+                                    <th className="px-4 py-3 cursor-pointer" onClick={handleSort}>
+                                        Full Name {sortOrder === "asc" ? "↑" : "↓"}
+                                    </th>
+                                    <th className="px-4 py-3">Email</th>
+                                    <th className="px-4 py-3">Average Grades</th>
+                                    <th className="px-4 py-3">Class</th>
+                                    <th className="px-4 py-3">Actions</th>
+                                </tr>
+                            </thead>
 
-                                return (
-                                    <React.Fragment key={student.student_id}>
-                                        <motion.tr
-                                            whileHover={{ scale: 1.01 }}
-                                            className="border-b hover:bg-gray-50 cursor-pointer"
-                                            onClick={() => toggleExpand(student.student_id)}
-                                        >
-                                            <td className="px-4 py-3">{index + 1}</td>
-                                            <td className="px-4 py-3 font-medium">
-                                                {student.first_name} {student.last_name}
-                                            </td>
-                                            <td className="px-4 py-3 text-sm text-gray-500">{student.email || "-"}</td>
-                                            <td className="px-4 py-3 text-sm text-gray-500">{calculateAverage(student.studentGrades)}</td>
-                                            <td className="px-4 py-3 text-sm text-gray-500">{student.class?.class_name || "-"}</td>
-                                            <td className="px-4 py-3">
-                                                <button
-                                                    className="text-blue-500"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleEditClick(student);
-                                                    }}
-                                                >
-                                                    Edit
-                                                </button>
-                                            </td>
-                                        </motion.tr>
-                                        <AnimatePresence>
-                                            {isOpen && (
-                                                <motion.tr
-                                                    layout
-                                                    initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1 }}
-                                                    exit={{ opacity: 0 }}
-                                                    transition={{ duration: 0.3 }}
-                                                    className="bg-blue-50"
-                                                >
-                                                    <td colSpan="6" className="px-6 py-4 text-left text-gray-700">
-                                                        <motion.div layout className="space-y-1">
-                                                            <div><strong>Phone:</strong> {student.phone || "—"}</div>
-                                                            <div><strong>Date of Birth:</strong> {student.date_of_birth?.slice(0, 10) || "—"}</div>
-                                                            <div>
-                                                                <strong>Grades:</strong>{" "}
-                                                                {student.studentGrades?.length > 0 ? (
-                                                                    <ul>
-                                                                        {student.studentGrades.map((grade, index) => (
-                                                                            <li key={index}>
-                                                                                Grade: {grade.grade_value} (Course: {grade.course?.course_name  || "Unknown"})
-                                                                            </li>
-                                                                            
-                                                                        ))}
-                                                                    </ul>
-                                                                ) : (
-                                                                    "No grades available"
-                                                                )}
-                                                            </div>
+                            <tbody>
+                                {filteredStudents.map((student, index) => {
+                                    const isOpen = expanded === student.student_id;
 
-                                                            <div><strong>Gender:</strong> {student.gender}</div>
-                                                            <div><strong>Student ID:</strong> {student.student_id}</div>
-                                                            {/* <div>
-                                                                <strong>Grades:</strong>{" "}
-                                                                {student.studentGrades?.length > 0 ? (
-                                                                    <ul>
-                                                                        {student.studentGrades.map((grade, index) => (
-                                                                            <li key={index}>
-                                                                                Grade: {grade.grade_value} (Course: {grade.course?.course_name || "Unknown"})
-                                                                            </li>
-                                                                        ))}
-                                                                    </ul>
-                                                                ) : (
-                                                                    "No grades available"
-                                                                )}
-                                                            </div> */}
+                                    return (
+                                        <React.Fragment key={student.student_id}>
+                                            <motion.tr
+                                                whileHover={{ scale: 1.01 }}
+                                                className="border-b hover:bg-gray-50 cursor-pointer"
+                                                onClick={() => toggleExpand(student.student_id)}
+                                            >
+                                                <td className="px-4 py-3">{index + 1}</td>
+                                                <td className="px-4 py-3 font-medium">
+                                                    {student.first_name} {student.last_name}
+                                                </td>
+                                                <td className="px-4 py-3 text-sm text-gray-500">{student.email || "-"}</td>
+                                                <td className="px-4 py-3 text-sm text-gray-500">{calculateAverage(student.studentGrades)}</td>
+                                                <td className="px-4 py-3 text-sm text-gray-500">{student.class?.class_name || "-"}</td>
+                                                <td className="px-4 py-3">
+                                                    <button
+                                                        className="text-blue-500"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleEditClick(student);
+                                                        }}
+                                                    >
+                                                        Edit
+                                                    </button>
 
-                                                        </motion.div>
-                                                    </td>
-                                                </motion.tr>
-                                            )}
-                                        </AnimatePresence>
-                                    </React.Fragment>
-                                );
-                            })}
-                        </tbody>
-                    </motion.table>
-                )}
-            </div>
+                                                </td>
+                                            </motion.tr>
+                                            <AnimatePresence>
+                                                {isOpen && (
+                                                    <motion.tr
+                                                        layout
+                                                        initial={{ opacity: 0 }}
+                                                        animate={{ opacity: 1 }}
+                                                        exit={{ opacity: 0 }}
+                                                        transition={{ duration: 0.3 }}
+                                                        className="bg-blue-50"
+                                                    >
+                                                        <td colSpan="6" className="px-6 py-4 text-left text-gray-700">
+                                                            <motion.div layout className="space-y-1">
+                                                                <div><strong>Phone:</strong> {student.phone || "—"}</div>
+                                                                <div><strong>Date of Birth:</strong> {student.date_of_birth?.slice(0, 10) || "—"}</div>
+                                                                <div>
+                                                                    <strong>Grades:</strong>{" "}
+                                                                    {student.studentGrades?.length > 0 ? (
+                                                                        <ul className="list-disc pl-5">
+                                                                            {student.studentGrades.map((grade, index) => (
+                                                                                <li key={index} className="text-gray-700">
+                                                                                    <span className="font-medium">Grade:</span> {grade.grade_value}{" "}
+                                                                                    <span className="font-medium">(Course:</span> {grade.course?.course_name || "Unknown"}
+
+                                                                                    <span className="font-medium">)</span>
+                                                                                </li>
+                                                                            ))}
+                                                                        </ul>
+                                                                    ) : (
+                                                                        <span className="text-gray-500">No grades available</span>
+                                                                    )}
+                                                                </div>
+
+                                                                <div><strong>Gender:</strong> {student.gender}</div>
+                                                                <div><strong>Student ID:</strong> {student.student_id}</div>
+                                                            </motion.div>
+                                                        </td>
+                                                    </motion.tr>
+                                                )}
+                                            </AnimatePresence>
+                                        </React.Fragment>
+                                    );
+                                })}
+                            </tbody>
+                        </motion.table>
+                    )}
+                </div>
+            ) : (
+                <div>
+                    <StudentCourseTable
+                        students={students}
+                        setStudents={setStudents}
+                        searchTerm={searchTerm} />
+                </div>
+            )}
 
             <AnimatePresence>
                 {showAddStudentForm && (
                     <>
-                        {/* Background Gray */}
                         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 z-40" />
-
-                        {/* Modal */}
                         <motion.div
                             key="add-student-modal"
                             className="fixed inset-0 flex justify-center items-center z-50"
